@@ -1,0 +1,32 @@
+import { Container, Eyebrow } from "./ui";
+
+const STEPS = [
+  { n: "01", title: "Import your loads", text: "Connect a broker email or drop a Rate Confirmation. AI parses it and creates the load with driver, truck and stops." },
+  { n: "02", title: "Dispatch & track", text: "Assign a driver, watch them on the live map, and let the timeline board keep every appointment in view." },
+  { n: "03", title: "Bill, pay, repeat", text: "Collect the POD, send the invoice, capture expenses and run payroll — margins and receivables update themselves." },
+];
+
+export default function Showcase() {
+  return (
+    <section id="how" className="border-t border-lead/15 py-20 md:py-28">
+      <Container>
+        <div className="mx-auto max-w-2xl text-center">
+          <Eyebrow className="mx-auto">How it works</Eyebrow>
+          <h2 className="mt-5 font-display text-3xl font-medium tracking-tight text-starlight md:text-[42px] md:leading-[1.1]">
+            From rate con to paid — without the busywork
+          </h2>
+        </div>
+
+        <div className="mt-14 grid gap-6 md:grid-cols-3">
+          {STEPS.map((s) => (
+            <div key={s.n} className="relative rounded-[4px] border border-lead/25 bg-midnight p-7">
+              <span className="font-display text-5xl font-semibold text-lead/40">{s.n}</span>
+              <h3 className="mt-5 text-xl font-semibold text-starlight">{s.title}</h3>
+              <p className="mt-2.5 text-sm leading-relaxed text-silver">{s.text}</p>
+            </div>
+          ))}
+        </div>
+      </Container>
+    </section>
+  );
+}

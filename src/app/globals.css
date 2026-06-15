@@ -1,26 +1,61 @@
 @import "tailwindcss";
 
+/* ── Mercury design system — "Mountain Top Command Center" ──────────────── */
+@theme {
+  --color-deep-space: #171721;   /* outermost bg */
+  --color-midnight: #1e1e2a;     /* section bg */
+  --color-graphite: #272735;     /* interactive surfaces */
+  --color-lead: #70707d;         /* borders / dividers */
+  --color-starlight: #ededf3;    /* primary text */
+  --color-silver: #c3c3cc;       /* secondary text */
+  --color-mercury: #5266eb;      /* primary accent (CTA only) */
+  --color-mercury-600: #4456d8;
+  --color-ghost: #cdddff;        /* secondary / hover */
+
+  --font-display: var(--font-manrope), "Inter", "Manrope", sans-serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #171721;
+  --foreground: #ededf3;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
+
+::selection {
+  background: color-mix(in srgb, var(--color-mercury) 35%, transparent);
+  color: #fff;
+}
+
+/* Command-center glow behind the hero */
+.mercury-glow {
+  background:
+    radial-gradient(55% 50% at 50% -5%, rgba(82, 102, 235, 0.28), transparent 70%),
+    radial-gradient(40% 45% at 88% 8%, rgba(205, 221, 255, 0.10), transparent 70%);
+}
+
+/* Fine grid texture */
+.mercury-grid {
+  background-image:
+    linear-gradient(to right, rgba(112, 112, 125, 0.10) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(112, 112, 125, 0.10) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+@keyframes mercuryRise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.rise { animation: mercuryRise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@media (prefers-reduced-motion: reduce) { .rise { animation: none; } }
