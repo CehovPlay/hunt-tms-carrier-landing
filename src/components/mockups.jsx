@@ -102,37 +102,51 @@ export function MapMock() {
           <span className="absolute -translate-x-1/2 -translate-y-full rounded-md bg-ink px-2 py-1 text-[10px] font-medium text-white" style={{ left: pu.x, top: pu.y - 10 }}>Pick up · Chicago, IL</span>
           <span className="absolute -translate-x-1/2 -translate-y-full rounded-md bg-ink px-2 py-1 text-[10px] font-medium text-white" style={{ left: del.x, top: del.y - 10 }}>Delivery · Dallas, TX</span>
         </div>
-        <div className="absolute bottom-3 left-3 rounded-lg border border-border bg-white px-3 py-2 shadow-sm">
-          <p className="text-xs font-semibold text-ink">Gudelio Ramos · #1974</p>
-          <p className="text-[11px] text-faint">ETA Dallas, TX · 2:30 PM</p>
-        </div>
-        <div className="absolute bottom-3 right-3 rounded-full border border-border bg-white px-2.5 py-1 text-[10px] font-medium text-faint shadow-sm">© CARTO · OSM</div>
       </div>
     </Frame>
   );
 }
 
 export function TimelineMock() {
+  // Mirrors the platform timeline: lane label + day grid + bars (id tag on top,
+  // route + rate inside a muted body with a colored left accent).
+  const TONE = { delivered: "#13AC67", en_route: "#FDB022", active: "#3b82f6" };
   const lanes = [
-    { d: "Andrew Stone", t: "#2042", bars: [{ l: 30, w: 22, c: "bg-emerald-500" }, { l: 60, w: 18, c: "bg-brand" }] },
-    { d: "Gudelio Ramos", t: "#1974", bars: [{ l: 10, w: 28, c: "bg-brand" }, { l: 70, w: 20, c: "bg-amber-500" }] },
-    { d: "Maks Orlov", t: "#1888", bars: [{ l: 44, w: 30, c: "bg-emerald-500" }] },
+    { d: "Andrew Stone", t: "#2042", bars: [{ id: "#9157619", route: "TX → CO", rate: "$2,875", l: 8, w: 30, tone: "delivered" }, { id: "#9158004", route: "CO → IL", rate: "$1,980", l: 62, w: 24, tone: "active" }] },
+    { d: "Gudelio Ramos", t: "#1974", bars: [{ id: "#9157553", route: "IL → TX", rate: "$3,450", l: 28, w: 34, tone: "active" }] },
+    { d: "Maks Orlov", t: "#1888", bars: [{ id: "#9157901", route: "NE → AZ", rate: "$4,100", l: 46, w: 30, tone: "en_route" }] },
   ];
   let i = 0;
   return (
     <Frame title="hunterTMS · Timeline">
-      <div className="grid grid-cols-7 border-b border-border bg-muted/60 text-center text-[10px] text-faint">
-        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((dd) => <div key={dd} className="border-l border-border py-2 first:border-l-0">{dd}</div>)}
+      <div className="grid grid-cols-[120px_1fr]">
+        <div className="border-b border-r border-border bg-muted/40 px-3 py-2 text-[10px] font-medium text-faint">May 2026</div>
+        <div className="grid grid-cols-7 border-b border-border bg-muted/40 text-center text-[10px] text-faint">
+          {["11", "12", "13", "14", "15", "16", "17"].map((dd, k) => <div key={dd} className={`py-2 ${k ? "border-l border-border" : ""}`}>{dd}</div>)}
+        </div>
       </div>
       <div className="divide-y divide-border">
         {lanes.map((lane) => (
-          <div key={lane.d} className="relative h-[68px] px-4 py-3">
-            <p className="text-xs font-medium text-ink">{lane.d}</p>
-            <p className="text-[10px] text-faint">Truck {lane.t}</p>
-            <div className="relative mt-2 h-5">
+          <div key={lane.d} className="grid grid-cols-[120px_1fr]">
+            <div className="border-r border-border px-3 py-3">
+              <p className="truncate text-xs font-semibold text-ink">{lane.d}</p>
+              <p className="text-[10px] text-faint">Truck {lane.t}</p>
+            </div>
+            <div className="relative h-[72px]">
+              <div className="absolute inset-0 grid grid-cols-7">{Array.from({ length: 7 }).map((_, k) => <div key={k} className={`${k ? "border-l border-border/70" : ""} ${k >= 5 ? "bg-muted/40" : ""}`} />)}</div>
               {lane.bars.map((b, k) => {
-                const delay = (i++ * 0.15).toFixed(2);
-                return <div key={k} className={`bar-grow absolute top-0 h-5 rounded ${b.c} opacity-90`} style={{ left: `${b.l}%`, width: `${b.w}%`, animationDelay: `${delay}s` }} />;
+                const delay = (i++ * 0.12).toFixed(2);
+                const color = TONE[b.tone];
+                return (
+                  <div key={k} className="bar-grow absolute flex flex-col" style={{ left: `${b.l}%`, width: `${b.w}%`, top: 10, animationDelay: `${delay}s` }}>
+                    <span className="w-fit rounded-t-[5px] px-1.5 py-0.5 text-[9px] font-medium leading-none text-white" style={{ backgroundColor: color }}>{b.id}</span>
+                    <div className="relative overflow-hidden rounded-[5px] rounded-tl-none bg-muted py-1 pl-2 pr-1" style={{ height: 36 }}>
+                      <span className="absolute left-0 top-0 h-full w-[3px]" style={{ backgroundColor: color }} />
+                      <p className="truncate text-[10px] font-medium text-ink">{b.route}</p>
+                      <p className="truncate text-[10px] text-faint">{b.rate}</p>
+                    </div>
+                  </div>
+                );
               })}
             </div>
           </div>
