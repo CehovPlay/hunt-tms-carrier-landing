@@ -8,7 +8,6 @@ import { Button, Container, Wordmark } from "./ui";
 const NAV = [
   { label: "Features", href: "#features" },
   { label: "How it works", href: "#how" },
-  { label: "Pricing", href: "#pricing" },
   { label: "FAQ", href: "#faq" },
 ];
 

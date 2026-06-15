@@ -1,4 +1,4 @@
-import { Navigation, MapPin, Package, ArrowRight } from "lucide-react";
+import { Navigation } from "lucide-react";
 
 function Frame({ title, children }) {
   return (
@@ -57,29 +57,64 @@ export function LoadsMock() {
   );
 }
 
+/* Real CARTO tile map (no API key) with an animated route + moving truck. */
 export function MapMock() {
+  const TILE = 256, Z = 5, SCALE = TILE * 2 ** Z;
+  const W = 560, H = 360;
+  const CENTER = { lat: 37.33, lng: -92.21 };
+  const worldPx = (lat, lng) => {
+    const sin = Math.sin((lat * Math.PI) / 180);
+    return {
+      x: ((lng + 180) / 360) * SCALE,
+      y: (0.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI)) * SCALE,
+    };
+  };
+  const c = worldPx(CENTER.lat, CENTER.lng);
+  const project = (lat, lng) => { const p = worldPx(lat, lng); return { x: W / 2 + (p.x - c.x), y: H / 2 + (p.y - c.y) }; };
+  const centerTile = { x: Math.floor(c.x / TILE), y: Math.floor(c.y / TILE) };
+  const off = { x: c.x - centerTile.x * TILE, y: c.y - centerTile.y * TILE };
+  const tiles = [];
+  for (let dx = -2; dx <= 2; dx++) {
+    for (let dy = -2; dy <= 2; dy++) {
+      const tx = centerTile.x + dx, ty = centerTile.y + dy;
+      const sub = ["a", "b", "c"][Math.abs(tx + ty) % 3];
+      tiles.push({ key: `${dx}_${dy}`, left: W / 2 - off.x + dx * TILE, top: H / 2 - off.y + dy * TILE, url: `https://${sub}.basemaps.cartocdn.com/light_all/${Z}/${tx}/${ty}.png` });
+    }
+  }
+  const pu = project(41.88, -87.63);   // Chicago (pickup)
+  const del = project(32.78, -96.80);  // Dallas (delivery)
+  const d = `M ${pu.x} ${pu.y} C ${pu.x - 30} ${pu.y + 110}, ${del.x + 70} ${del.y - 110}, ${del.x} ${del.y}`;
+
   return (
     <Frame title="hunterTMS · Live map">
-      <div className="relative h-[300px] bg-muted dot-grid">
-        <svg viewBox="0 0 400 300" className="absolute inset-0 h-full w-full" preserveAspectRatio="none">
-          <path d="M70 220 C 140 150, 200 180, 250 120 C 290 75, 330 90, 350 70" fill="none" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round" />
-        </svg>
-        {/* PU */}
-        <div className="absolute left-[16%] top-[71%] flex flex-col items-center">
-          <span className="mb-1 rounded-md bg-ink px-2 py-1 text-[10px] font-medium text-white">Pick up · Chicago, IL</span>
-          <span className="h-3.5 w-3.5 rounded-full border-2 border-white bg-emerald-500 shadow" />
+      <div className="relative h-[360px] overflow-hidden bg-muted">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" style={{ width: W, height: H }}>
+          {tiles.map((t) => (
+            <img key={t.key} src={t.url} alt="" draggable={false} className="absolute h-64 w-64 max-w-none select-none" style={{ left: t.left, top: t.top, filter: "saturate(0.92) brightness(1.02)" }} />
+          ))}
+
+          <svg width={W} height={H} className="absolute inset-0">
+            <path d={d} fill="none" stroke="#3b82f6" strokeOpacity="0.22" strokeWidth="9" strokeLinecap="round" />
+            <path id="route" d={d} fill="none" stroke="#3b82f6" strokeWidth="3" strokeLinecap="round" />
+            <path d={d} fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" className="route-flow" />
+            <g>
+              <circle r="13" fill="#3b82f6" stroke="#ffffff" strokeWidth="3" />
+              <path d="M0 -5 L4 5 L0 2.2 L-4 5 Z" fill="#ffffff" />
+              <animateMotion dur="7s" repeatCount="indefinite" rotate="auto"><mpath href="#route" /></animateMotion>
+            </g>
+            <circle cx={pu.x} cy={pu.y} r="6" fill="#10b981" stroke="#fff" strokeWidth="2.5" />
+            <circle cx={del.x} cy={del.y} r="6" fill="#f97316" stroke="#fff" strokeWidth="2.5" />
+          </svg>
+
+          <span className="absolute -translate-x-1/2 -translate-y-full rounded-md bg-ink px-2 py-1 text-[10px] font-medium text-white" style={{ left: pu.x, top: pu.y - 10 }}>Pick up · Chicago, IL</span>
+          <span className="absolute -translate-x-1/2 -translate-y-full rounded-md bg-ink px-2 py-1 text-[10px] font-medium text-white" style={{ left: del.x, top: del.y - 10 }}>Delivery · Dallas, TX</span>
         </div>
-        {/* driver */}
-        <span className="absolute left-[58%] top-[40%] flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white bg-brand text-white shadow-lg"><Navigation className="h-3.5 w-3.5" fill="currentColor" /></span>
-        {/* DEL */}
-        <div className="absolute left-[86%] top-[22%] flex flex-col items-center">
-          <span className="mb-1 rounded-md bg-ink px-2 py-1 text-[10px] font-medium text-white">Delivery · Dallas, TX</span>
-          <span className="h-3.5 w-3.5 rounded-full border-2 border-white bg-orange-500 shadow" />
-        </div>
+
         <div className="absolute bottom-3 left-3 rounded-lg border border-border bg-white px-3 py-2 shadow-sm">
           <p className="text-xs font-semibold text-ink">Gudelio Ramos · #1974</p>
           <p className="text-[11px] text-faint">ETA Dallas, TX · 2:30 PM</p>
         </div>
+        <div className="absolute bottom-3 right-3 rounded-full border border-border bg-white px-2.5 py-1 text-[10px] font-medium text-faint shadow-sm">© CARTO · OSM</div>
       </div>
     </Frame>
   );
@@ -91,19 +126,21 @@ export function TimelineMock() {
     { d: "Gudelio Ramos", bars: [{ l: 10, w: 28, c: "bg-brand" }, { l: 70, w: 20, c: "bg-amber-500" }] },
     { d: "Maks Orlov", bars: [{ l: 44, w: 30, c: "bg-emerald-500" }] },
   ];
+  let i = 0;
   return (
     <Frame title="hunterTMS · Timeline">
       <div className="grid grid-cols-7 border-b border-border bg-muted/60 text-center text-[10px] text-faint">
-        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => <div key={d} className="border-l border-border py-2 first:border-l-0">{d}</div>)}
+        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((dd) => <div key={dd} className="border-l border-border py-2 first:border-l-0">{dd}</div>)}
       </div>
       <div className="divide-y divide-border">
         {lanes.map((lane) => (
           <div key={lane.d} className="relative h-16 px-4 py-3">
             <p className="text-xs font-medium text-ink">{lane.d}</p>
             <div className="relative mt-2 h-5">
-              {lane.bars.map((b, i) => (
-                <div key={i} className={`absolute top-0 h-5 rounded ${b.c} opacity-90`} style={{ left: `${b.l}%`, width: `${b.w}%` }} />
-              ))}
+              {lane.bars.map((b, k) => {
+                const delay = (i++ * 0.15).toFixed(2);
+                return <div key={k} className={`bar-grow absolute top-0 h-5 rounded ${b.c} opacity-90`} style={{ left: `${b.l}%`, width: `${b.w}%`, animationDelay: `${delay}s` }} />;
+              })}
             </div>
           </div>
         ))}

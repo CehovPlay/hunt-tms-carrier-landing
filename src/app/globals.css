@@ -60,4 +60,16 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 .rise { animation: rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
-@media (prefers-reduced-motion: reduce) { .rise { animation: none; } }
+
+/* Animated route flow (moving dashes along the blue line) */
+@keyframes routeFlow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -22; } }
+.route-flow { stroke-dasharray: 4 6; animation: routeFlow 0.9s linear infinite; }
+
+/* Timeline bars grow in */
+@keyframes barGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.bar-grow { transform-origin: left center; animation: barGrow 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rise, .bar-grow { animation: none; }
+  .route-flow { animation: none; }
+}

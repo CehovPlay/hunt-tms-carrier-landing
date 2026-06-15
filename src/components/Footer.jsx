@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Container, Wordmark } from "./ui";
 
 const COLS = [
-  { title: "Product", links: [["Features", "#features"], ["How it works", "#how"], ["Pricing", "#pricing"], ["FAQ", "#faq"]] },
+  { title: "Product", links: [["Features", "#features"], ["How it works", "#how"], ["FAQ", "#faq"]] },
   { title: "Company", links: [["Dispatch product", "https://tms.loadhunt.ai/"], ["About", "#"], ["Contact", "#"]] },
   { title: "Legal", links: [["Privacy", "#"], ["Terms", "#"], ["Security", "#"]] },
 ];
