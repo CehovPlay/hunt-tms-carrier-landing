@@ -1,4 +1,4 @@
-import { FileScan, Navigation, BadgeDollarSign, ArrowRight } from "lucide-react";
+import { FileScan, Navigation, BadgeDollarSign } from "lucide-react";
 import { Container, Eyebrow } from "./ui";
 
 const STEPS = [
@@ -19,28 +19,19 @@ export default function Showcase() {
           <p className="mt-4 text-base text-body md:text-lg">Three steps. The platform handles the rest.</p>
         </div>
 
-        <div className="relative mt-16 grid gap-6 md:grid-cols-3 md:gap-5">
-          {/* connecting line */}
-          <div className="pointer-events-none absolute left-[16%] right-[16%] top-[44px] hidden h-px bg-gradient-to-r from-border via-brand/40 to-border md:block" />
-          {STEPS.map((s, i) => {
+        <div className="mt-16 grid gap-6 md:grid-cols-3">
+          {STEPS.map((s) => {
             const Icon = s.icon;
             return (
-              <div key={s.n} className="relative">
-                <div className="group rounded-2xl border border-border bg-white p-7 transition-shadow duration-300 hover:shadow-[0_24px_60px_rgba(23,23,23,0.07)]">
-                  <div className="flex items-center justify-between">
-                    <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-xl bg-brand text-white shadow-[0_8px_24px_rgba(59,130,246,0.35)]">
-                      <Icon className="h-6 w-6" />
-                    </div>
-                    <span className="font-display text-5xl font-semibold text-border-strong">{s.n}</span>
+              <div key={s.n} className="rounded-2xl border border-border bg-white p-7">
+                <div className="flex items-center justify-between">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-brand text-white">
+                    <Icon className="h-6 w-6" />
                   </div>
-                  <h3 className="mt-6 text-xl font-semibold text-ink">{s.title}</h3>
-                  <p className="mt-2.5 text-sm leading-relaxed text-body">{s.text}</p>
+                  <span className="font-display text-5xl font-semibold text-border-strong">{s.n}</span>
                 </div>
-                {i < STEPS.length - 1 ? (
-                  <div className="absolute -right-3 top-[44px] z-10 hidden h-6 w-6 items-center justify-center rounded-full border border-border bg-white text-brand md:flex">
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </div>
-                ) : null}
+                <h3 className="mt-6 text-xl font-semibold text-ink">{s.title}</h3>
+                <p className="mt-2.5 text-sm leading-relaxed text-body">{s.text}</p>
               </div>
             );
           })}

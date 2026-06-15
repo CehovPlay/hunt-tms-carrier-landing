@@ -29,10 +29,10 @@ export default function Features() {
             </p>
           </div>
 
-          {/* Stacked feature blocks */}
+          {/* Stacked feature blocks (20% narrower than the column) */}
           <div className="flex flex-col gap-20 md:gap-28">
             {BLOCKS.map((b) => (
-              <div key={b.tag}>
+              <div key={b.tag} className="md:max-w-[80%]">
                 <div className="rounded-2xl border border-border bg-muted/50 p-4 md:p-6">{b.mock}</div>
                 <p className="mt-7 text-xs font-medium uppercase tracking-[0.12em] text-faint">{b.tag}</p>
                 <h3 className="mt-3 font-display text-2xl font-semibold tracking-tight text-ink md:text-[30px] md:leading-[1.15]">{b.title}</h3>

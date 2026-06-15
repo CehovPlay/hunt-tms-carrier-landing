@@ -1,14 +1,11 @@
 import Link from "next/link";
 
-// Content container (centered, readable width)
+// Single shared container — header, footer and every content section use the
+// same width/padding so all edges line up (mirrors the dispatch prod).
 export function Container({ className = "", children }) {
-  return <div className={`mx-auto w-full max-w-[1200px] px-6 ${className}`}>{children}</div>;
-}
-
-// Prod-style wide container (header/footer) — mirrors tms.loadhunt.ai
-export function WideContainer({ className = "", children }) {
   return <div className={`mx-auto w-full max-w-[1920px] px-[14px] sm:px-6 md:px-10 xl:px-[120px] ${className}`}>{children}</div>;
 }
+export const WideContainer = Container;
 
 /* Button — 1:1 with the dispatch prod `btnComponent` (pill + inset shadow) */
 const SIZES = { sm: "h-10 px-6", md: "h-[52px] px-7", lg: "h-[52px] px-8" };
