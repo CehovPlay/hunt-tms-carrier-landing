@@ -3,7 +3,7 @@ import { Container } from "./ui";
 
 export default function CtaBand() {
   return (
-    <section id="cta" className="relative overflow-hidden border-t border-border py-24 md:py-32">
+    <section id="cta" className="relative flex min-h-[1080px] flex-col justify-center overflow-hidden border-t border-border py-24">
       <div className="pointer-events-none absolute inset-0 brand-glow" />
       <Container className="relative">
         <div className="mx-auto max-w-2xl text-center">

@@ -1,26 +1,30 @@
 import Link from "next/link";
 
+// Content container (centered, readable width)
 export function Container({ className = "", children }) {
   return <div className={`mx-auto w-full max-w-[1200px] px-6 ${className}`}>{children}</div>;
 }
 
-const SIZES = {
-  sm: "px-4 py-2 text-sm",
-  md: "px-5 py-2.5 text-[15px]",
-  lg: "px-6 py-3 text-base",
-};
+// Prod-style wide container (header/footer) — mirrors tms.loadhunt.ai
+export function WideContainer({ className = "", children }) {
+  return <div className={`mx-auto w-full max-w-[1920px] px-[14px] sm:px-6 md:px-10 xl:px-[120px] ${className}`}>{children}</div>;
+}
+
+/* Button — 1:1 with the dispatch prod `btnComponent` (pill + inset shadow) */
+const SIZES = { sm: "h-10 px-6", md: "h-[52px] px-7", lg: "h-[52px] px-8" };
 const VARIANTS = {
-  primary: "bg-brand text-white hover:bg-brand-600",
-  soft: "bg-brand-soft text-brand hover:bg-brand/10",
-  outline: "border border-border bg-white text-ink hover:bg-muted",
-  ghost: "text-body hover:bg-muted hover:text-ink",
+  // accent (primary) — blue with inner top highlight
+  primary: "bg-brand text-white shadow-[inset_0px_2px_4px_1px_rgba(255,255,255,0.4)] hover:bg-brand-600",
+  // white — with inner bottom shadow
+  secondary: "bg-white text-ink shadow-[inset_0px_-2px_4px_1px_rgba(23,23,23,0.2)] hover:bg-muted",
+  ghost: "text-ink hover:bg-muted",
   link: "text-faint hover:text-ink",
 };
 
 export function Button({ href, variant = "primary", size = "md", className = "", children, ...props }) {
-  const cls = `inline-flex items-center justify-center gap-2 rounded-full font-medium transition-colors duration-200 ${SIZES[size]} ${VARIANTS[variant]} ${className}`;
+  const cls = `inline-flex cursor-pointer items-center justify-center gap-2 rounded-full text-sm font-medium transition-colors duration-200 ${SIZES[size]} ${VARIANTS[variant]} ${className}`;
   if (href) return <Link href={href} className={cls} {...props}>{children}</Link>;
-  return <button className={cls} {...props}>{children}</button>;
+  return <button type="button" className={cls} {...props}>{children}</button>;
 }
 
 export function Eyebrow({ children, className = "" }) {
@@ -32,13 +36,11 @@ export function Eyebrow({ children, className = "" }) {
   );
 }
 
-export function Wordmark({ className = "" }) {
+export function Wordmark({ badge = "For carriers", className = "" }) {
   return (
-    <Link href="/" className={`group inline-flex items-center gap-2.5 text-ink ${className}`}>
-      <img src="/logo.svg" alt="hunterTMS" className="h-6 w-auto" />
-      <span className="hidden rounded-full border border-border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-faint sm:inline">
-        Carrier
-      </span>
-    </Link>
+    <div className={`flex items-center gap-[10px] ${className}`}>
+      <Link href="/" className="text-ink"><img src="/logo.svg" alt="hunterTMS" className="h-5 w-auto" /></Link>
+      {badge ? <span className="w-fit rounded-full bg-[#E8E8E8] px-[6px] py-[2px] text-sm font-medium text-ink">{badge}</span> : null}
+    </div>
   );
 }

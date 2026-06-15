@@ -2,7 +2,7 @@ import { Container, Eyebrow } from "./ui";
 
 export default function Testimonial() {
   return (
-    <section className="border-t border-border bg-surface py-20 md:py-28">
+    <section className="flex min-h-[1080px] flex-col justify-center border-t border-border bg-surface py-20">
       <Container>
         <div className="mx-auto max-w-3xl text-center">
           <Eyebrow className="mx-auto">Why carriers switch</Eyebrow>

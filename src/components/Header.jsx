@@ -2,58 +2,49 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
-import { Button, Container, Wordmark } from "./ui";
-
-const NAV = [
-  { label: "Features", href: "#features" },
-  { label: "How it works", href: "#how" },
-  { label: "FAQ", href: "#faq" },
-];
+import { WideContainer, Wordmark } from "./ui";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const btnAccent = "px-6 cursor-pointer rounded-full text-sm font-medium h-10 flex items-center justify-center bg-brand text-white shadow-[inset_0px_2px_4px_1px_rgba(255,255,255,0.4)]";
+  const btnWhite = "px-6 cursor-pointer rounded-full text-sm font-medium h-10 flex items-center justify-center bg-white text-ink shadow-[inset_0px_-2px_4px_1px_rgba(23,23,23,0.2)]";
+
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-white/80 backdrop-blur-xl">
-      <Container className="flex h-16 items-center justify-between">
-        <Wordmark />
+    <header className="fixed left-0 right-0 top-0 z-50">
+      <div className="flex h-[56px] items-center border-b border-[#E5E5E5] bg-white/70 backdrop-blur-[7.5px]">
+        <WideContainer className="flex items-center justify-between">
+          <Wordmark badge="For carriers" />
 
-        <nav className="hidden items-center gap-8 md:flex">
-          {NAV.map((item) => (
-            <Link key={item.href} href={item.href} className="text-sm text-body transition-colors hover:text-ink">
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+          <nav className="hidden md:block">
+            <ul className="flex items-center gap-6">
+              <li><a className="cursor-default text-sm font-medium text-ink opacity-50" href="#">Dispatchers</a></li>
+              <li><a className="text-sm font-medium text-ink" href="#features">Features</a></li>
+              <li><a className="text-sm font-medium text-ink" href="#faq">Contact</a></li>
+            </ul>
+          </nav>
 
-        <div className="hidden items-center gap-2 md:flex">
-          <Button href="#demo" variant="ghost" size="sm">Get a demo</Button>
-          <Button href="#cta" size="sm">Try it free</Button>
-        </div>
+          <div className="hidden items-center gap-2 md:flex">
+            <Link href="#cta" className={btnAccent}>Sign in</Link>
+            <Link href="#cta" className={btnWhite}>Sign up</Link>
+          </div>
 
-        <button
-          type="button"
-          aria-label="Menu"
-          onClick={() => setOpen((v) => !v)}
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-border text-ink md:hidden"
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
-      </Container>
+          <div className="md:hidden">
+            <button type="button" onClick={() => setOpen((v) => !v)} className={btnWhite}>Menu</button>
+          </div>
+        </WideContainer>
+      </div>
 
       {open ? (
-        <div className="border-t border-border bg-white md:hidden">
-          <Container className="flex flex-col gap-1 py-4">
-            {NAV.map((item) => (
-              <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className="rounded-lg px-2 py-3 text-base text-body hover:bg-muted hover:text-ink">
-                {item.label}
-              </Link>
-            ))}
+        <div className="border-b border-[#E5E5E5] bg-white md:hidden">
+          <WideContainer className="flex flex-col gap-1 py-4">
+            <a href="#features" onClick={() => setOpen(false)} className="rounded-lg px-2 py-3 text-base font-medium text-ink hover:bg-muted">Features</a>
+            <a href="#how" onClick={() => setOpen(false)} className="rounded-lg px-2 py-3 text-base font-medium text-ink hover:bg-muted">How it works</a>
+            <a href="#faq" onClick={() => setOpen(false)} className="rounded-lg px-2 py-3 text-base font-medium text-ink hover:bg-muted">Contact</a>
             <div className="mt-2 flex flex-col gap-2">
-              <Button href="#demo" variant="outline" onClick={() => setOpen(false)}>Get a demo</Button>
-              <Button href="#cta" onClick={() => setOpen(false)}>Try it free</Button>
+              <Link href="#cta" className={btnAccent} onClick={() => setOpen(false)}>Sign in</Link>
+              <Link href="#cta" className={btnWhite} onClick={() => setOpen(false)}>Sign up</Link>
             </div>
-          </Container>
+          </WideContainer>
         </div>
       ) : null}
     </header>

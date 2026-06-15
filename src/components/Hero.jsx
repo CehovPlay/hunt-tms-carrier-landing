@@ -4,11 +4,11 @@ import { LoadsMock } from "./mockups";
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden">
+    <section className="relative flex min-h-[1080px] flex-col justify-center overflow-hidden">
       <div className="pointer-events-none absolute inset-0 dot-grid opacity-70" />
       <div className="pointer-events-none absolute inset-0 brand-glow" />
 
-      <Container className="relative pt-16 pb-16 md:pt-24 md:pb-20">
+      <Container className="relative py-16">
         <div className="mx-auto max-w-3xl text-center rise">
           <Eyebrow>Carrier-side TMS · by LoadHunter</Eyebrow>
           <h1 className="mt-6 font-display text-[40px] font-semibold leading-[1.05] tracking-tight text-ink md:text-[64px]">

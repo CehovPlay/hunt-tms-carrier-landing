@@ -9,7 +9,7 @@ const STATS = [
 
 export default function Stats() {
   return (
-    <section className="border-t border-border py-16 md:py-20">
+    <section className="flex min-h-[1080px] flex-col justify-center border-t border-border py-20">
       <Container>
         <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-4">
           {STATS.map((s) => (

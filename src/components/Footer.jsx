@@ -1,41 +1,47 @@
 import Link from "next/link";
-import { Container, Wordmark } from "./ui";
-
-const COLS = [
-  { title: "Product", links: [["Features", "#features"], ["How it works", "#how"], ["FAQ", "#faq"]] },
-  { title: "Company", links: [["Dispatch product", "https://tms.loadhunt.ai/"], ["About", "#"], ["Contact", "#"]] },
-  { title: "Legal", links: [["Privacy", "#"], ["Terms", "#"], ["Security", "#"]] },
-];
+import { WideContainer } from "./ui";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-border bg-white py-14">
-      <Container>
-        <div className="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
+    <footer className="border-t border-border bg-white">
+      <WideContainer>
+        <div className="flex flex-col justify-between gap-12 py-[80px] md:flex-row md:py-[120px]">
           <div>
-            <Wordmark />
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-body">
-              The carrier-side TMS by LoadHunter. Dispatch, billing, payroll and compliance — in one platform.
+            <img src="/logo.svg" alt="hunterTMS" className="h-6 w-auto" />
+            <p className="mt-10 max-w-[890px] text-sm font-medium leading-[20px] text-[#C7C7C7]">
+              hunterTMS by LoadHunter is the carrier-side platform built for U.S. fleets and owner-operators. Dispatch, invoicing, factoring, expenses, payroll, driver compliance and live tracking in one workspace. It is the companion to the dispatcher-first product and is not affiliated with or endorsed by any third-party load board or factoring service mentioned. All trademarks remain the property of their respective owners. Built for speed, clarity and fewer clicks — not more tabs.
             </p>
           </div>
-          {COLS.map((col) => (
-            <div key={col.title}>
-              <p className="text-sm font-semibold text-ink">{col.title}</p>
-              <ul className="mt-4 space-y-3">
-                {col.links.map(([label, href]) => (
-                  <li key={label}>
-                    <Link href={href} className="text-sm text-body transition-colors hover:text-ink">{label}</Link>
-                  </li>
-                ))}
-              </ul>
+          <div className="pt-[27px] text-sm font-medium">
+            <h4 className="mb-6 text-[#A2A2A2]">24/7 support — we’re always on.</h4>
+            <div className="mb-[6px] flex items-center justify-between text-[#686B6F]">
+              <span>Phone:</span>
+              <a className="w-[168px] text-right hover:underline" href="tel:+13128789795">+1 (312) 878-9795</a>
             </div>
-          ))}
+            <div className="flex items-center justify-between text-[#686B6F]">
+              <span>E-mail:</span>
+              <a className="w-[168px] text-right hover:underline" href="mailto:support@loadhunter.io">support@loadhunter.io</a>
+            </div>
+          </div>
         </div>
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 text-sm text-faint sm:flex-row">
-          <p>© {new Date().getFullYear()} LoadHunter. All rights reserved.</p>
-          <p>Built for U.S. carriers.</p>
+      </WideContainer>
+
+      <div className="border-t border-dashed border-[#C7C7C7] py-12">
+        <WideContainer>
+          <img src="/logo.svg" alt="hunterTMS" className="h-16 w-auto opacity-[0.08] md:h-24" />
+        </WideContainer>
+      </div>
+
+      <WideContainer>
+        <div className="flex items-center justify-between border-t border-[#E8E8E8] py-5 text-xs font-medium text-[#A2A2A2]">
+          <span>© {new Date().getFullYear()} hunterTMS. All rights reserved</span>
+          <div className="flex items-center gap-6">
+            <Link className="hover:underline" href="#">Terms of Service</Link>
+            <div className="h-[6px] w-px bg-[#E8E8E8]" />
+            <Link className="hover:underline" href="#">Privacy Policy</Link>
+          </div>
         </div>
-      </Container>
+      </WideContainer>
     </footer>
   );
 }

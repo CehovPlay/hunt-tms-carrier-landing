@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <>
       <Header />
-      <main>
+      <main className="pt-[56px]">
         <Hero />
         <Features />
         <Showcase />

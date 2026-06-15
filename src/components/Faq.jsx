@@ -11,7 +11,7 @@ const QA = [
 
 export default function Faq() {
   return (
-    <section id="faq" className="border-t border-border bg-surface py-20 md:py-28">
+    <section id="faq" className="flex min-h-[1080px] flex-col justify-center border-t border-border bg-surface py-20">
       <Container>
         <div className="mx-auto max-w-2xl text-center">
           <Eyebrow className="mx-auto">FAQ</Eyebrow>
