@@ -1,24 +1,28 @@
 import { ArrowRight } from "lucide-react";
 import { Container } from "./ui";
 
-export default function CtaBand() {
+export default function CtaBand({
+  heading = "Bring your fleet onto one platform",
+  sub = "Start free in minutes. Import your first load and see dispatch, billing and payroll sync themselves.",
+  placeholder = "you@yourcarrier.com",
+} = {}) {
   return (
     <section id="cta" className="relative flex min-h-[1080px] flex-col justify-center overflow-hidden border-t border-border py-24">
       <div className="pointer-events-none absolute inset-0 brand-glow" />
       <Container className="relative">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-display text-3xl font-semibold tracking-tight text-ink md:text-[46px] md:leading-[1.08]">
-            Bring your fleet onto one platform
+            {heading}
           </h2>
           <p className="mx-auto mt-5 max-w-lg text-base text-body md:text-lg">
-            Start free in minutes. Import your first load and see dispatch, billing and payroll sync themselves.
+            {sub}
           </p>
 
           <form className="mx-auto mt-9 flex max-w-md items-stretch" action="#" method="post">
             <input
               type="email"
               required
-              placeholder="you@yourcarrier.com"
+              placeholder={placeholder}
               aria-label="Work email"
               className="h-12 min-w-0 flex-1 rounded-l-full rounded-r-none border border-border bg-white px-5 text-sm text-ink placeholder:text-faint focus:border-brand focus:outline-none"
             />

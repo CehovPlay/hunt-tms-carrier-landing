@@ -4,23 +4,33 @@ import { useState } from "react";
 import Link from "next/link";
 import { WideContainer, Wordmark } from "./ui";
 
-export default function Header() {
+export default function Header({ audience = "carriers" }) {
   const [open, setOpen] = useState(false);
   const btnAccent = "px-6 cursor-pointer rounded-full text-sm font-medium h-10 flex items-center justify-center bg-brand text-white shadow-[inset_0px_2px_4px_1px_rgba(255,255,255,0.4)]";
   const btnWhite = "px-6 cursor-pointer rounded-full text-sm font-medium h-10 flex items-center justify-center bg-white text-ink shadow-[inset_0px_-2px_4px_1px_rgba(23,23,23,0.2)]";
 
+  const toggleItem = (active) =>
+    active
+      ? "rounded-full bg-white px-3.5 py-1.5 text-sm font-medium text-ink shadow-[0_1px_2px_rgba(23,23,23,0.12)]"
+      : "rounded-full px-3.5 py-1.5 text-sm font-medium text-faint transition-colors hover:text-ink";
+
+  const AudienceToggle = (
+    <div className="flex items-center rounded-full border border-border bg-muted p-0.5">
+      <Link href="/" className={toggleItem(audience === "carriers")}>Carriers</Link>
+      <Link href="/dispatchers" className={toggleItem(audience === "dispatchers")}>Dispatchers</Link>
+    </div>
+  );
+
   return (
     <header className="fixed left-0 right-0 top-0 z-50">
       <div className="flex h-[56px] items-center border-b border-[#E5E5E5] bg-white/70 backdrop-blur-[7.5px]">
-        <WideContainer className="flex items-center justify-between">
-          <Wordmark badge="For carriers" />
+        <WideContainer className="flex items-center justify-between gap-4">
+          <Wordmark badge={audience === "dispatchers" ? "For dispatchers" : "For carriers"} />
 
-          <nav className="hidden md:block">
-            <ul className="flex items-center gap-6">
-              <li><a className="cursor-default text-sm font-medium text-ink opacity-50" href="#">Dispatchers</a></li>
-              <li><a className="text-sm font-medium text-ink" href="#features">Features</a></li>
-              <li><a className="text-sm font-medium text-ink" href="#faq">Contact</a></li>
-            </ul>
+          <nav className="hidden items-center gap-6 md:flex">
+            {AudienceToggle}
+            <a className="text-sm font-medium text-ink" href="#features">Features</a>
+            <a className="text-sm font-medium text-ink" href="#faq">Contact</a>
           </nav>
 
           <div className="hidden items-center gap-2 md:flex">
@@ -37,6 +47,7 @@ export default function Header() {
       {open ? (
         <div className="border-b border-[#E5E5E5] bg-white md:hidden">
           <WideContainer className="flex flex-col gap-1 py-4">
+            <div className="mb-1 self-start">{AudienceToggle}</div>
             <a href="#features" onClick={() => setOpen(false)} className="rounded-lg px-2 py-3 text-base font-medium text-ink hover:bg-muted">Features</a>
             <a href="#how" onClick={() => setOpen(false)} className="rounded-lg px-2 py-3 text-base font-medium text-ink hover:bg-muted">How it works</a>
             <a href="#faq" onClick={() => setOpen(false)} className="rounded-lg px-2 py-3 text-base font-medium text-ink hover:bg-muted">Contact</a>

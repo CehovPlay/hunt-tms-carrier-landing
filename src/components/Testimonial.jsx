@@ -10,18 +10,18 @@ const QUOTES = [
   { quote: "Compliance alerts caught two expiring medical cards before they grounded a truck. That one save paid for the whole year.", name: "Dwayne T.", role: "Safety & dispatch · 18 trucks", initials: "DT" },
 ];
 
-export default function Testimonial() {
+export default function Testimonial({ eyebrow = "Why carriers switch", quotes = QUOTES } = {}) {
   const [i, setI] = useState(0);
   useEffect(() => {
-    const id = setInterval(() => setI((v) => (v + 1) % QUOTES.length), 5000);
+    const id = setInterval(() => setI((v) => (v + 1) % quotes.length), 5000);
     return () => clearInterval(id);
-  }, []);
-  const t = QUOTES[i];
+  }, [quotes.length]);
+  const t = quotes[i % quotes.length];
   return (
     <section className="flex min-h-[1080px] flex-col justify-center border-t border-border bg-surface py-20">
       <Container>
         <div className="mx-auto max-w-3xl text-center">
-          <Eyebrow className="mx-auto">Why carriers switch</Eyebrow>
+          <Eyebrow className="mx-auto">{eyebrow}</Eyebrow>
           <blockquote key={i} className="rise mt-9 min-h-[180px] font-display text-2xl font-medium leading-snug tracking-tight text-ink md:min-h-[200px] md:text-[32px] md:leading-[1.3]">
             “{t.quote}”
           </blockquote>
@@ -34,7 +34,7 @@ export default function Testimonial() {
           </div>
           {/* dots */}
           <div className="mt-9 flex items-center justify-center gap-2">
-            {QUOTES.map((_, k) => (
+            {quotes.map((_, k) => (
               <button
                 key={k}
                 type="button"

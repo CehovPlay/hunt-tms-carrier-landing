@@ -7,26 +7,30 @@ const STEPS = [
   { n: "03", icon: BadgeDollarSign, title: "Bill, pay, repeat", text: "Collect the POD, send the invoice, capture expenses and run payroll — margins and receivables update themselves." },
 ];
 
-export default function Showcase() {
+export default function Showcase({
+  heading = "From rate con to paid — without the busywork",
+  sub = "Three steps. The platform handles the rest.",
+  steps = STEPS,
+} = {}) {
   return (
     <section id="how" className="flex min-h-[1080px] flex-col justify-center border-t border-border bg-surface py-20">
       <Container>
         <div className="mx-auto max-w-2xl text-center">
           <Eyebrow className="mx-auto">How it works</Eyebrow>
           <h2 className="mt-5 font-display text-3xl font-semibold tracking-tight text-ink md:text-[44px] md:leading-[1.08]">
-            From rate con to paid — without the busywork
+            {heading}
           </h2>
-          <p className="mt-4 text-base text-body md:text-lg">Three steps. The platform handles the rest.</p>
+          <p className="mt-4 text-base text-body md:text-lg">{sub}</p>
         </div>
 
         <div className="mt-16 grid gap-6 md:grid-cols-3">
-          {STEPS.map((s) => {
+          {steps.map((s) => {
             const Icon = s.icon;
             return (
               <div key={s.n} className="rounded-2xl border border-border bg-white p-7">
                 <div className="flex items-center justify-between">
                   <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-brand text-white">
-                    <Icon className="h-6 w-6" />
+                    {Icon ? <Icon className="h-6 w-6" /> : <span className="text-lg font-semibold">{s.n}</span>}
                   </div>
                   <span className="font-display text-5xl font-semibold text-border-strong">{s.n}</span>
                 </div>

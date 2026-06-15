@@ -13,25 +13,28 @@ const BLOCKS = [
   { tag: "HuntBot AI", title: "Ask in plain English — it acts for you", text: "“Show expenses for truck #105.” “Generate payroll for dispatchers.” HuntBot navigates the platform and runs the workflow for you.", bullets: ["Natural-language commands", "Runs real workflows", "Catches costly mistakes"], mock: <HuntBotMock /> },
 ];
 
-export default function Features() {
+export default function Features({
+  eyebrow = "Everything, in one place",
+  heading,
+  sub = "Stop stitching together five tools. hunterTMS connects dispatch, billing, expenses, payroll and compliance so the data syncs itself.",
+  blocks = BLOCKS,
+} = {}) {
   return (
     <section id="features" className="border-t border-border py-24 md:py-32">
       <Container>
-        <div className="grid gap-14 md:grid-cols-[0.85fr_1.15fr] md:gap-16 lg:gap-24">
+        <div className="grid gap-14 md:grid-cols-[0.85fr_1.15fr] md:gap-24 lg:gap-32 xl:gap-40">
           {/* Sticky section title */}
           <div className="md:sticky md:top-[96px] md:self-start">
-            <Eyebrow>Everything, in one place</Eyebrow>
+            <Eyebrow>{eyebrow}</Eyebrow>
             <h2 className="mt-5 font-display text-3xl font-semibold tracking-tight text-ink md:text-[44px] md:leading-[1.06]">
-              One platform for the whole back office
+              {heading || (<>One platform for the whole<br />back office</>)}
             </h2>
-            <p className="mt-5 max-w-md text-base leading-relaxed text-body md:text-lg">
-              Stop stitching together five tools. hunterTMS connects dispatch, billing, expenses, payroll and compliance so the data syncs itself.
-            </p>
+            <p className="mt-5 max-w-md text-base leading-relaxed text-body md:text-lg">{sub}</p>
           </div>
 
           {/* Stacked feature blocks (20% narrower than the column) */}
           <div className="flex flex-col gap-20 md:gap-28">
-            {BLOCKS.map((b) => (
+            {blocks.map((b) => (
               <div key={b.tag} className="md:max-w-[80%]">
                 <div className="rounded-2xl border border-border bg-muted/50 p-4 md:p-6">{b.mock}</div>
                 <p className="mt-7 text-xs font-medium uppercase tracking-[0.12em] text-faint">{b.tag}</p>

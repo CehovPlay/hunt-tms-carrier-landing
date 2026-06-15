@@ -9,7 +9,7 @@ const QA = [
   { q: "How long does setup take?", a: "Minutes. Import your first load or connect a broker email and you're dispatching the same day." },
 ];
 
-export default function Faq() {
+export default function Faq({ heading = "Get answers to your most common questions", qa = QA } = {}) {
   return (
     <section id="faq" className="border-t border-border py-[120px]">
       <Container>
@@ -18,7 +18,7 @@ export default function Faq() {
           <div>
             <Eyebrow>FAQ</Eyebrow>
             <h2 className="mt-7 font-display text-3xl font-semibold tracking-tight text-ink md:text-[44px] md:leading-[1.08]">
-              Get answers to your most common questions
+              {heading}
             </h2>
             <p className="mt-5 text-base text-body md:text-lg">
               Not finding what you’re looking for? <a href="#cta" className="font-medium text-brand hover:underline">Reach out to our team.</a>
@@ -27,7 +27,7 @@ export default function Faq() {
 
           {/* Right: accordion */}
           <div className="flex flex-col gap-3">
-            {QA.map((item) => (
+            {qa.map((item) => (
               <details key={item.q} className="group rounded-2xl border border-border bg-white px-5 shadow-[0_1px_2px_rgba(23,23,23,0.04)]">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-left text-[15px] font-medium text-ink [&::-webkit-details-marker]:hidden">
                   {item.q}
