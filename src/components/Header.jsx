@@ -15,13 +15,13 @@ const NAV = [
 export default function Header() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-50 border-b border-lead/20 bg-deep-space/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-border bg-white/80 backdrop-blur-xl">
       <Container className="flex h-16 items-center justify-between">
         <Wordmark />
 
         <nav className="hidden items-center gap-8 md:flex">
           {NAV.map((item) => (
-            <Link key={item.href} href={item.href} className="text-sm text-silver transition-colors hover:text-starlight">
+            <Link key={item.href} href={item.href} className="text-sm text-body transition-colors hover:text-ink">
               {item.label}
             </Link>
           ))}
@@ -36,17 +36,17 @@ export default function Header() {
           type="button"
           aria-label="Menu"
           onClick={() => setOpen((v) => !v)}
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-lead/40 text-starlight md:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-border text-ink md:hidden"
         >
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </Container>
 
       {open ? (
-        <div className="border-t border-lead/20 bg-deep-space md:hidden">
+        <div className="border-t border-border bg-white md:hidden">
           <Container className="flex flex-col gap-1 py-4">
             {NAV.map((item) => (
-              <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className="rounded-lg px-2 py-3 text-base text-silver hover:bg-graphite hover:text-starlight">
+              <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className="rounded-lg px-2 py-3 text-base text-body hover:bg-muted hover:text-ink">
                 {item.label}
               </Link>
             ))}

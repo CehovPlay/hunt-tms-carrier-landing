@@ -34,37 +34,37 @@ const PLANS = [
 
 export default function Pricing() {
   return (
-    <section id="pricing" className="border-t border-lead/15 py-20 md:py-28">
+    <section id="pricing" className="border-t border-border py-20 md:py-28">
       <Container>
         <div className="mx-auto max-w-2xl text-center">
           <Eyebrow className="mx-auto">Pricing</Eyebrow>
-          <h2 className="mt-5 font-display text-3xl font-medium tracking-tight text-starlight md:text-[42px] md:leading-[1.1]">
+          <h2 className="mt-5 font-display text-3xl font-semibold tracking-tight text-ink md:text-[44px] md:leading-[1.08]">
             Simple per-truck pricing
           </h2>
-          <p className="mt-4 text-base text-silver md:text-lg">No setup fees. No per-seat upsells. Scale up or down anytime.</p>
+          <p className="mt-4 text-base text-body md:text-lg">No setup fees. No per-seat upsells. Scale up or down anytime.</p>
         </div>
 
         <div className="mt-14 grid gap-6 lg:grid-cols-3">
           {PLANS.map((p) => (
             <div
               key={p.name}
-              className={`relative flex flex-col rounded-[4px] border bg-midnight p-7 ${p.featured ? "border-mercury/60" : "border-lead/25"}`}
+              className={`relative flex flex-col rounded-xl border bg-white p-7 ${p.featured ? "border-brand shadow-[0_24px_70px_rgba(59,130,246,0.12)]" : "border-border"}`}
             >
               {p.featured ? (
-                <span className="absolute -top-3 left-7 rounded-full bg-mercury px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-white">
+                <span className="absolute -top-3 left-7 rounded-full bg-brand px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-white">
                   Most popular
                 </span>
               ) : null}
-              <p className="text-sm font-medium text-silver">{p.name}</p>
+              <p className="text-sm font-medium text-faint">{p.name}</p>
               <div className="mt-3 flex items-baseline gap-1.5">
-                <span className="font-display text-4xl font-semibold tracking-tight text-starlight">{p.price}</span>
-                {p.unit ? <span className="text-sm text-lead">{p.unit}</span> : null}
+                <span className="font-display text-4xl font-semibold tracking-tight text-ink">{p.price}</span>
+                {p.unit ? <span className="text-sm text-faint">{p.unit}</span> : null}
               </div>
-              <p className="mt-3 text-sm text-silver">{p.blurb}</p>
+              <p className="mt-3 text-sm text-body">{p.blurb}</p>
               <ul className="mt-6 flex-1 space-y-3">
                 {p.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2.5 text-sm text-starlight">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-mercury" />
+                  <li key={f} className="flex items-start gap-2.5 text-sm text-ink">
+                    <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-brand-soft text-brand"><Check className="h-2.5 w-2.5" /></span>
                     {f}
                   </li>
                 ))}

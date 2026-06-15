@@ -1,24 +1,26 @@
 @import "tailwindcss";
 
-/* ── Mercury design system — "Mountain Top Command Center" ──────────────── */
+/* ── LoadHunter palette — matched to the dispatch prod (tms.loadhunt.ai) ── */
 @theme {
-  --color-deep-space: #171721;   /* outermost bg */
-  --color-midnight: #1e1e2a;     /* section bg */
-  --color-graphite: #272735;     /* interactive surfaces */
-  --color-lead: #70707d;         /* borders / dividers */
-  --color-starlight: #ededf3;    /* primary text */
-  --color-silver: #c3c3cc;       /* secondary text */
-  --color-mercury: #5266eb;      /* primary accent (CTA only) */
-  --color-mercury-600: #4456d8;
-  --color-ghost: #cdddff;        /* secondary / hover */
+  --color-bg: #ffffff;          /* page background */
+  --color-surface: #f7f7f8;     /* alternating section bg */
+  --color-muted: #f5f5f5;       /* chips / hover surfaces */
+  --color-border: #e8e8e8;      /* hairline borders */
+  --color-border-strong: #d8d8d8;
+  --color-ink: #171717;         /* headings */
+  --color-body: #454545;        /* body text */
+  --color-faint: #818181;       /* muted text */
+  --color-brand: #3b82f6;       /* accent (CTA / links) */
+  --color-brand-600: #2f6fe0;   /* hover */
+  --color-brand-soft: #f0f4ff;  /* soft accent surface */
 
-  --font-display: var(--font-manrope), "Inter", "Manrope", sans-serif;
-  --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-inter), "Inter", system-ui, sans-serif;
+  --font-body: var(--font-inter), "Inter", system-ui, sans-serif;
 }
 
 :root {
-  --background: #171721;
-  --foreground: #ededf3;
+  --background: #ffffff;
+  --foreground: #171717;
 }
 
 html {
@@ -27,35 +29,35 @@ html {
 
 body {
   background: var(--background);
-  color: var(--foreground);
+  color: var(--color-body);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--color-mercury) 35%, transparent);
-  color: #fff;
+  background: color-mix(in srgb, var(--color-brand) 22%, transparent);
+  color: var(--color-ink);
 }
 
-/* Command-center glow behind the hero */
-.mercury-glow {
+/* Soft brand glow behind hero / CTA */
+.brand-glow {
   background:
-    radial-gradient(55% 50% at 50% -5%, rgba(82, 102, 235, 0.28), transparent 70%),
-    radial-gradient(40% 45% at 88% 8%, rgba(205, 221, 255, 0.10), transparent 70%);
+    radial-gradient(60% 55% at 50% -10%, rgba(59, 130, 246, 0.12), transparent 70%),
+    radial-gradient(36% 40% at 88% 6%, rgba(59, 130, 246, 0.06), transparent 70%);
 }
 
 /* Fine grid texture */
-.mercury-grid {
+.dot-grid {
   background-image:
-    linear-gradient(to right, rgba(112, 112, 125, 0.10) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(112, 112, 125, 0.10) 1px, transparent 1px);
+    linear-gradient(to right, rgba(23, 23, 23, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(23, 23, 23, 0.04) 1px, transparent 1px);
   background-size: 56px 56px;
 }
 
-@keyframes mercuryRise {
+@keyframes rise {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.rise { animation: mercuryRise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.rise { animation: rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
 @media (prefers-reduced-motion: reduce) { .rise { animation: none; } }

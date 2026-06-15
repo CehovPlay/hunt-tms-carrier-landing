@@ -1,0 +1,147 @@
+import { Navigation, MapPin, Package, ArrowRight } from "lucide-react";
+
+function Frame({ title, children }) {
+  return (
+    <div className="overflow-hidden rounded-xl border border-border bg-white shadow-[0_24px_70px_rgba(23,23,23,0.08)]">
+      <div className="flex items-center gap-2 border-b border-border px-4 py-3">
+        <span className="h-2.5 w-2.5 rounded-full bg-border-strong" />
+        <span className="h-2.5 w-2.5 rounded-full bg-border" />
+        <span className="h-2.5 w-2.5 rounded-full bg-border" />
+        <span className="ml-3 text-xs text-faint">{title}</span>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function Badge({ tone = "blue", children }) {
+  const tones = {
+    blue: "bg-brand-soft text-brand",
+    green: "bg-emerald-50 text-emerald-600",
+    amber: "bg-amber-50 text-amber-600",
+    grey: "bg-muted text-faint",
+  };
+  return <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${tones[tone]}`}><span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" />{children}</span>;
+}
+
+export function LoadsMock() {
+  return (
+    <Frame title="hunterTMS · Loads">
+      <div className="grid grid-cols-4 gap-px bg-border">
+        {[["Revenue", "$12,975"], ["Receivables", "$10,425"], ["Delivered", "2"], ["Payroll", "$4,169"]].map(([l, v]) => (
+          <div key={l} className="bg-white px-4 py-3.5">
+            <p className="text-[10px] uppercase tracking-wide text-faint">{l}</p>
+            <p className="mt-1 text-base font-semibold text-ink">{v}</p>
+          </div>
+        ))}
+      </div>
+      <div className="divide-y divide-border border-t border-border">
+        {[
+          ["#9157553", "Chicago, IL → Dallas, TX", "$3,450", "green", "Ready"],
+          ["#9157619", "Austin, TX → Denver, CO", "$2,875", "blue", "Invoiced"],
+          ["#9157901", "Omaha, NE → Phoenix, AZ", "$4,100", "amber", "Review"],
+        ].map(([id, route, rate, tone, st]) => (
+          <div key={id} className="flex items-center justify-between gap-3 px-4 py-3">
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-ink">{id}</p>
+              <p className="truncate text-xs text-faint">{route}</p>
+            </div>
+            <div className="flex shrink-0 items-center gap-3">
+              <span className="text-sm font-semibold text-ink">{rate}</span>
+              <Badge tone={tone}>{st}</Badge>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Frame>
+  );
+}
+
+export function MapMock() {
+  return (
+    <Frame title="hunterTMS · Live map">
+      <div className="relative h-[300px] bg-muted dot-grid">
+        <svg viewBox="0 0 400 300" className="absolute inset-0 h-full w-full" preserveAspectRatio="none">
+          <path d="M70 220 C 140 150, 200 180, 250 120 C 290 75, 330 90, 350 70" fill="none" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round" />
+        </svg>
+        {/* PU */}
+        <div className="absolute left-[16%] top-[71%] flex flex-col items-center">
+          <span className="mb-1 rounded-md bg-ink px-2 py-1 text-[10px] font-medium text-white">Pick up · Chicago, IL</span>
+          <span className="h-3.5 w-3.5 rounded-full border-2 border-white bg-emerald-500 shadow" />
+        </div>
+        {/* driver */}
+        <span className="absolute left-[58%] top-[40%] flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white bg-brand text-white shadow-lg"><Navigation className="h-3.5 w-3.5" fill="currentColor" /></span>
+        {/* DEL */}
+        <div className="absolute left-[86%] top-[22%] flex flex-col items-center">
+          <span className="mb-1 rounded-md bg-ink px-2 py-1 text-[10px] font-medium text-white">Delivery · Dallas, TX</span>
+          <span className="h-3.5 w-3.5 rounded-full border-2 border-white bg-orange-500 shadow" />
+        </div>
+        <div className="absolute bottom-3 left-3 rounded-lg border border-border bg-white px-3 py-2 shadow-sm">
+          <p className="text-xs font-semibold text-ink">Gudelio Ramos · #1974</p>
+          <p className="text-[11px] text-faint">ETA Dallas, TX · 2:30 PM</p>
+        </div>
+      </div>
+    </Frame>
+  );
+}
+
+export function TimelineMock() {
+  const lanes = [
+    { d: "Andrew Stone", bars: [{ l: 30, w: 22, c: "bg-emerald-500" }, { l: 60, w: 18, c: "bg-brand" }] },
+    { d: "Gudelio Ramos", bars: [{ l: 10, w: 28, c: "bg-brand" }, { l: 70, w: 20, c: "bg-amber-500" }] },
+    { d: "Maks Orlov", bars: [{ l: 44, w: 30, c: "bg-emerald-500" }] },
+  ];
+  return (
+    <Frame title="hunterTMS · Timeline">
+      <div className="grid grid-cols-7 border-b border-border bg-muted/60 text-center text-[10px] text-faint">
+        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => <div key={d} className="border-l border-border py-2 first:border-l-0">{d}</div>)}
+      </div>
+      <div className="divide-y divide-border">
+        {lanes.map((lane) => (
+          <div key={lane.d} className="relative h-16 px-4 py-3">
+            <p className="text-xs font-medium text-ink">{lane.d}</p>
+            <div className="relative mt-2 h-5">
+              {lane.bars.map((b, i) => (
+                <div key={i} className={`absolute top-0 h-5 rounded ${b.c} opacity-90`} style={{ left: `${b.l}%`, width: `${b.w}%` }} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </Frame>
+  );
+}
+
+export function BillingMock() {
+  return (
+    <Frame title="hunterTMS · Invoice">
+      <div className="p-5">
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-sm font-bold text-ink">Hunt Carrier LLC</p>
+            <p className="text-[11px] text-faint">MC-1048291 · DOT 4203694</p>
+          </div>
+          <div className="text-right">
+            <p className="text-sm font-bold uppercase tracking-tight text-ink">Invoice</p>
+            <p className="text-[11px] text-faint">#101907</p>
+          </div>
+        </div>
+        <div className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 border-t border-border pt-4 text-xs">
+          <div><p className="text-faint">Bill to</p><p className="font-medium text-ink">Blue Arrow Brokerage</p></div>
+          <div><p className="text-faint">Terms</p><p className="font-medium text-ink">Net 30</p></div>
+          <div><p className="text-faint">Route</p><p className="font-medium text-ink">Chicago → Dallas</p></div>
+          <div><p className="text-faint">Distance</p><p className="font-medium text-ink">1,432 mi</p></div>
+        </div>
+        <div className="mt-4 space-y-2 border-t border-border pt-4 text-sm">
+          <div className="flex justify-between text-body"><span>Line haul</span><span>$3,250</span></div>
+          <div className="flex justify-between text-body"><span>Fuel surcharge</span><span>$200</span></div>
+          <div className="flex justify-between border-t border-border pt-2 font-semibold text-ink"><span>Amount due</span><span>$3,450</span></div>
+        </div>
+        <div className="mt-4 flex items-center gap-2">
+          <Badge tone="green">Sent to factor</Badge>
+          <Badge tone="grey">Net 30</Badge>
+        </div>
+      </div>
+    </Frame>
+  );
+}
