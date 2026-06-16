@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles, Send, CheckCircle2, House, Route, FileText, Receipt, WalletCards, BarChart3, Clock3, MapPin, UserRound, Truck, Settings, Search, Bell, ChevronRight, FileScan, Fuel, Activity, Building2, PanelLeft, LayoutDashboard, AlignLeft, Users, ChevronDown, Download, ArrowUpRight, Plus, ScanLine, Paperclip, StickyNote, AlertTriangle, Gauge, DollarSign, Calendar, Phone, Mail } from "lucide-react";
+import { Sparkles, Send, CheckCircle2, House, Route, FileText, Receipt, WalletCards, BarChart3, Clock3, MapPin, UserRound, Truck, Settings, Search, Bell, ChevronRight, FileScan, Fuel, Activity, Building2, PanelLeft, LayoutDashboard, AlignLeft, Users, ChevronDown, Download, ArrowUpRight, Plus, ScanLine, Paperclip, StickyNote, AlertTriangle, Gauge, DollarSign, Calendar, Phone, Mail, LogOut } from "lucide-react";
 import { motion, useInView, AnimatePresence } from "motion/react";
 import { useRef, useState, useEffect } from "react";
 import { ROUTE_CHI_DAL } from "@/data/route";
@@ -59,12 +59,18 @@ function Delta({ value, tone = "green" }) {
   );
 }
 
-// Compact 3-column table panel used across the dashboard mockup.
-function MiniTable({ title, sub, head, rows }) {
+// Compact 3-column table panel used across the dashboard mockup. An optional
+// `icon` renders a small dark chip beside the title (matches the real app).
+function MiniTable({ title, sub, head, rows, icon }) {
   return (
     <div className="rounded-xl border border-border bg-white p-4">
-      <p className="text-sm font-semibold text-ink">{title}</p>
-      <p className="text-[11px] text-faint">{sub}</p>
+      <div className="flex items-center gap-2">
+        {icon ? <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-ink text-white">{icon}</span> : null}
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-ink">{title}</p>
+          <p className="truncate text-[11px] text-faint">{sub}</p>
+        </div>
+      </div>
       <div className="mt-3 grid grid-cols-[1.6fr_1fr_0.8fr] gap-2 text-[10px] uppercase tracking-wide text-faint">
         <span>{head[0]}</span><span>{head[1]}</span><span className="text-right">{head[2]}</span>
       </div>
@@ -85,16 +91,18 @@ function MiniTable({ title, sub, head, rows }) {
    KPIs + analytics cards) ── */
 
 export function DashboardMock() {
+  // Flat nav (group spacing only, no labels — matches the real app).
   const nav = [
-    { group: "Account", items: [["Home", House, { active: true, count: "4" }], ["Loads", Route, { count: "4" }], ["Invoices", FileText], ["Expenses", Receipt, { count: "1" }], ["Salaries", WalletCards, { count: "6" }], ["Reports", BarChart3, { count: "3" }]] },
-    { group: "Freight", items: [["Timeline", Clock3], ["Map", MapPin, { count: "1" }], ["Drivers", UserRound, { count: "2" }], ["Equipment", Truck, { count: "2" }], ["Fleets", Building2], ["Customers", Building2], ["Fuel Cards", Fuel, { soon: true }]] },
-    { group: "Platform", items: [["Analytics", BarChart3, { soon: true }], ["Insights", Activity, { soon: true }], ["Activities", Activity, { soon: true }], ["Company", Building2], ["Team", UserRound, { soon: true }], ["Settings", Settings]] },
+    [["Home", House, { active: true, count: "5" }], ["Loads", Route, { count: "5" }], ["Invoices", FileText], ["Expenses", Receipt, { count: "1" }], ["Salaries", WalletCards, { count: "6" }], ["Reports", BarChart3, { count: "3" }]],
+    [["Timeline", Clock3], ["Map", MapPin, { count: "2" }], ["Drivers", UserRound, { count: "3" }], ["Equipment", Truck, { count: "3" }], ["Fleets", Building2], ["Customers", Building2], ["Fuel Cards", Fuel, { soon: true }]],
+    [["Analytics", BarChart3, { soon: true }], ["Insights", Activity, { soon: true }], ["Activities", Activity, { soon: true }], ["Company", Building2], ["Team", UserRound, { soon: true }], ["Settings", Settings]],
   ];
   const kpis = [
-    { label: "Revenue", v: 12975, p: "$", hint: "4 loads booked" },
-    { label: "Open receivables", v: 10425, p: "$", hint: "3 invoices waiting" },
-    { label: "Delivered loads", v: 4, hint: "delivered, invoiced or paid" },
-    { label: "Payroll outstanding", v: 4846, p: "$", hint: "6 not closed" },
+    { label: "Revenue", v: 15525, p: "$", hint: "5 loads booked" },
+    { label: "Open receivables", v: 12975, p: "$", hint: "4 invoices waiting" },
+    { label: "Delivered loads", v: 5, hint: "delivered, invoiced or paid" },
+    { label: "Payroll outstanding", v: 4169, p: "$", hint: "6 not closed" },
+    { label: "Invoiced", v: 5100, p: "$", hint: "2 invoices posted" },
   ];
   const attention = [
     ["Maintenance · $1,240.00", "Upload receipt"],
@@ -103,15 +111,16 @@ export function DashboardMock() {
     ["Mike Dispatcher", "Pending · Ready to approve"],
   ];
   const brokers = [
+    ["Skyline Logistics", "2", "$5,100"],
     ["Northline Transport", "1", "$4,100"],
     ["Blue Arrow Brokerage", "1", "$3,450"],
     ["Summit Freight Partners", "1", "$2,875"],
-    ["Skyline Logistics", "1", "$2,550"],
   ];
   const invoices = [
-    ["#101909", "In Review", "amber", "$4,100"],
-    ["#101907", "Ready", "green", "$3,450"],
+    ["#101909", "Ready", "green", "$4,100"],
+    ["#101907", "In Review", "amber", "$3,450"],
     ["#101908", "Invoiced", "grey", "$2,875"],
+    ["INV-2026-9158126", "Draft", "grey", "$2,550"],
   ];
   const settlements = [
     ["Robert Fleet", "Ready to approve", "green", "$1,350"],
@@ -119,49 +128,55 @@ export function DashboardMock() {
     ["Gudelio Ramos", "Ready to approve", "green", "$535"],
     ["Mike Dispatcher", "Ready to approve", "green", "$520"],
     ["Anna Accounting", "Ready to pay", "green", "$460"],
-    ["Safety Bonus Pool", "Review", "amber", "$300"],
+    ["Safety Bonus Pool", "Ready to pay", "green", "$300"],
   ];
   const tone = { green: "bg-emerald-50 text-emerald-600", amber: "bg-amber-50 text-amber-600", grey: "bg-muted text-faint" };
-  // Monthly profit (Jan–Jun) from the real chartData, normalised to a tiny SVG.
+  // Monthly profit + Expenses trends, normalised to tiny SVGs (shared x-grid).
+  const W = 300, padB = 100;
   const profit = [7200, 8100, 8900, 10200, 8140, 11600];
   const months = ["Feb", "Mar", "Apr", "May", "Jun"];
-  const lo = 6500, hi = 12000, W = 300, H = 110, padB = 100;
   const px = (i) => 8 + (i * (W - 16)) / (profit.length - 1);
-  const py = (v) => padB - ((v - lo) / (hi - lo)) * (padB - 12);
-  const line = profit.map((v, i) => `${i ? "L" : "M"} ${px(i).toFixed(1)} ${py(v).toFixed(1)}`).join(" ");
-  const area = `${line} L ${px(profit.length - 1).toFixed(1)} ${padB} L ${px(0).toFixed(1)} ${padB} Z`;
+  const norm = (v, lo, hi) => padB - ((v - lo) / (hi - lo)) * (padB - 12);
+  const pathOf = (arr, lo, hi) => {
+    const l = arr.map((v, i) => `${i ? "L" : "M"} ${px(i).toFixed(1)} ${norm(v, lo, hi).toFixed(1)}`).join(" ");
+    return { line: l, area: `${l} L ${px(arr.length - 1).toFixed(1)} ${padB} L ${px(0).toFixed(1)} ${padB} Z` };
+  };
+  const py = (v) => norm(v, 6500, 12000);
+  const { line, area } = pathOf(profit, 6500, 12000);
+  const expense = [3900, 4300, 4150, 4600, 4350, 4720];
+  const exp = pathOf(expense, 3500, 5000);
 
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-white">
       <div className="flex min-h-[560px] text-[13px]">
         {/* Sidebar */}
         <aside className="hidden w-[210px] shrink-0 flex-col border-r border-border bg-surface/60 sm:flex">
-          <div className="flex items-center border-b border-border px-4 py-3.5">
+          <div className="flex items-center justify-between border-b border-border px-4 py-3.5">
             <img src="/logo.svg" alt="hunterTMS" className="h-[18px] w-auto" />
+            <PanelLeft className="h-3.5 w-3.5 text-faint" />
           </div>
-          <nav className="space-y-4 px-3 py-4">
-            {nav.map((g) => (
-              <div key={g.group}>
-                <p className="px-2 pb-1.5 text-[10px] font-medium uppercase tracking-[0.12em] text-faint">{g.group}</p>
-                <div className="space-y-0.5">
-                  {g.items.map(([label, Icon, meta = {}]) => (
-                    <div key={label} className={`flex items-center gap-2.5 rounded-lg px-2 py-1.5 ${meta.active ? "bg-white font-medium text-ink shadow-[0_1px_2px_rgba(23,23,23,0.06)]" : meta.soon ? "text-faint/60" : "text-faint"}`}>
-                      <Icon className="h-[15px] w-[15px]" />
-                      <span className="flex-1">{label}</span>
-                      {meta.count ? <span className="text-[11px] text-faint">{meta.count}</span> : null}
-                      {meta.soon ? <span className="rounded bg-muted px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wide text-faint">Soon</span> : null}
-                    </div>
-                  ))}
-                </div>
+          <nav className="space-y-3 px-3 py-4">
+            {nav.map((group, gi) => (
+              <div key={gi} className="space-y-0.5">
+                {gi > 0 ? <div className="mx-2 mb-2.5 border-t border-border" /> : null}
+                {group.map(([label, Icon, meta = {}]) => (
+                  <div key={label} className={`flex items-center gap-2.5 rounded-lg px-2 py-1.5 ${meta.active ? "bg-white font-medium text-ink shadow-[0_1px_2px_rgba(23,23,23,0.06)]" : meta.soon ? "text-faint/55" : "text-faint"}`}>
+                    <Icon className="h-[15px] w-[15px]" />
+                    <span className="flex-1">{label}</span>
+                    {meta.count ? <span className="text-[11px] text-faint">{meta.count}</span> : null}
+                    {meta.soon ? <span className="rounded bg-muted px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wide text-faint">Soon</span> : null}
+                  </div>
+                ))}
               </div>
             ))}
           </nav>
           <div className="mt-auto flex items-center gap-2.5 border-t border-border px-4 py-3">
-            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="" className="h-7 w-7 shrink-0 rounded-full object-cover" />
-            <div className="min-w-0 leading-tight">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink text-xs font-semibold text-white">D</span>
+            <div className="min-w-0 flex-1 leading-tight">
               <p className="text-xs font-medium text-ink">Dino</p>
-              <p className="truncate text-[10px] text-faint">dino@huntlogistics.com</p>
+              <p className="truncate text-[10px] text-faint">Admin · dino@hunt.tms</p>
             </div>
+            <LogOut className="h-3.5 w-3.5 shrink-0 text-faint" />
           </div>
         </aside>
 
@@ -170,16 +185,16 @@ export function DashboardMock() {
           {/* Top bar */}
           <div className="flex items-center gap-3 border-b border-border px-5 py-3">
             <PanelLeft className="h-4 w-4 text-faint" />
+            <span className="text-sm font-medium text-ink">Home</span>
             <div className="ml-auto flex w-[280px] max-w-[55%] items-center gap-2 rounded-lg border border-border bg-muted/60 px-3 py-1.5 text-faint">
               <Search className="h-3.5 w-3.5" /> <span className="truncate">Search by driver, load id…</span>
               <span className="ml-auto rounded border border-border bg-white px-1.5 text-[11px]">⌘K</span>
             </div>
-            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-border text-faint"><Bell className="h-3.5 w-3.5" /></span>
           </div>
 
-          <div className="flex-1 space-y-4 overflow-hidden p-5">
+          <div className="flex-1 space-y-3 overflow-hidden p-4">
             {/* KPI cards */}
-            <Stagger className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+            <Stagger className="grid grid-cols-2 gap-3 xl:grid-cols-5">
               {kpis.map(({ label, v, p, hint }) => (
                 <Item key={label} variants={RISE} className="rounded-xl border border-border bg-white p-4">
                   <p className="truncate text-xs font-medium text-faint">{label}</p>
@@ -189,14 +204,26 @@ export function DashboardMock() {
               ))}
             </Stagger>
 
-            {/* Needs attention · Monthly profit · Meet HuntBot */}
+            {/* Meet HuntBot — full-width banner */}
+            <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, ease: EASE }} className="relative flex items-center gap-4 overflow-hidden rounded-xl px-5 py-4 text-white" style={{ backgroundColor: "#0a0a12", backgroundImage: "linear-gradient(180deg, rgba(10,10,18,0.6), rgba(10,10,18,0) 38%, rgba(10,10,18,0) 62%, rgba(10,10,18,0.6)), linear-gradient(90deg, rgba(10,10,18,0) 5%, rgba(190,30,90,0.6) 22%, rgba(220,90,40,0.55) 34%, rgba(40,165,120,0.5) 48%, rgba(40,90,225,0.6) 64%, rgba(124,60,235,0.55) 80%, rgba(10,10,18,0) 97%)" }}>
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/25"><Sparkles className="h-5 w-5" /></span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-bold">Meet HuntBot</p>
+                <p className="mt-0.5 text-[11px] leading-5 text-white/80">Your AI dispatch assistant — open any screen, generate payroll, and compare BOL vs Rate Confirmation just by asking.</p>
+              </div>
+              <span className="hidden shrink-0 items-center gap-1 text-xs font-medium md:inline-flex">See what it can do <ChevronRight className="h-3.5 w-3.5" /></span>
+            </motion.div>
+
+            {/* Needs attention · Monthly profit · Expenses */}
             <div className="grid gap-3 lg:grid-cols-3">
               <div className="rounded-xl border border-border bg-white p-4">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-ink">Needs attention</p>
-                  <span className="text-[11px] text-faint">View all ›</span>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-ink text-white"><AlertTriangle className="h-3.5 w-3.5" /></span>
+                    <div><p className="text-sm font-semibold text-ink">Needs attention</p><p className="text-[11px] text-faint">Highest-impact records to open first.</p></div>
+                  </div>
+                  <span className="shrink-0 text-[11px] text-faint">View all ›</span>
                 </div>
-                <p className="text-[11px] text-faint">Highest-impact records to open first.</p>
                 <Stagger className="mt-3 space-y-1.5" gap={0.08}>
                   {attention.map(([label, detail]) => (
                     <Item key={label} variants={RISE} className="flex items-center gap-2.5 rounded-lg border border-border px-3 py-2">
@@ -209,9 +236,11 @@ export function DashboardMock() {
               </div>
 
               <div className="rounded-xl border border-border bg-white p-4">
-                <p className="text-sm font-semibold text-ink">Monthly profit</p>
-                <p className="text-[11px] text-faint">This month: $11,600</p>
-                <svg viewBox="0 0 300 110" preserveAspectRatio="none" className="mt-3 h-[150px] w-full">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-ink text-white"><BarChart3 className="h-3.5 w-3.5" /></span>
+                  <div><p className="text-sm font-semibold text-ink">Monthly profit</p><p className="text-[11px] text-faint">This month: $11,600</p></div>
+                </div>
+                <svg viewBox="0 0 300 110" preserveAspectRatio="none" className="mt-3 h-[140px] w-full">
                   <defs>
                     <linearGradient id="profitFill" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#737373" stopOpacity="0.16" />
@@ -225,21 +254,31 @@ export function DashboardMock() {
                 <div className="flex justify-between text-[10px] text-faint">{months.map((m) => <span key={m}>{m}</span>)}</div>
               </div>
 
-              <div className="relative flex flex-col justify-between overflow-hidden rounded-xl p-4 text-white" style={{ backgroundColor: "#0a0a14", backgroundImage: "radial-gradient(135% 95% at 10% 118%, rgba(37,99,235,0.7), transparent 58%), radial-gradient(120% 95% at 118% 6%, rgba(245,158,11,0.55), transparent 52%), radial-gradient(95% 95% at 60% 42%, rgba(124,58,237,0.6), transparent 60%), radial-gradient(80% 80% at 92% 95%, rgba(236,72,153,0.45), transparent 55%)" }}>
-                <div>
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/25"><Sparkles className="h-5 w-5" /></span>
-                  <p className="mt-3 text-base font-bold">Meet HuntBot</p>
-                  <p className="mt-1.5 text-[11px] leading-5 text-white/80">Your AI dispatch assistant — open any screen, generate payroll, and compare BOL vs Rate Confirmation just by asking.</p>
+              <div className="rounded-xl border border-border bg-white p-4">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-ink text-white"><Receipt className="h-3.5 w-3.5" /></span>
+                  <div><p className="text-sm font-semibold text-ink">Expenses</p><p className="text-[11px] text-faint">Spend trend over the last months.</p></div>
                 </div>
-                <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium">See what it can do <ChevronRight className="h-3.5 w-3.5" /></span>
+                <svg viewBox="0 0 300 110" preserveAspectRatio="none" className="mt-3 h-[140px] w-full">
+                  <defs>
+                    <linearGradient id="expenseFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#737373" stopOpacity="0.16" />
+                      <stop offset="100%" stopColor="#737373" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                  <motion.path d={exp.area} fill="url(#expenseFill)" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.5 }} />
+                  <motion.path d={exp.line} fill="none" stroke="#525252" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true, margin: "0px 0px -10% 0px" }} transition={{ duration: 1.1, delay: 0.1, ease: EASE }} />
+                  {expense.map((v, i) => <motion.circle key={i} cx={px(i)} cy={norm(v, 3500, 5000)} r="2" fill="#fff" stroke="#525252" strokeWidth="1.2" vectorEffect="non-scaling-stroke" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.7 + i * 0.08, duration: 0.3 }} />)}
+                </svg>
+                <div className="flex justify-between text-[10px] text-faint">{months.map((m) => <span key={m}>{m}</span>)}</div>
               </div>
             </div>
 
             {/* Top brokers · Outstanding invoices · Pending settlements */}
             <div className="grid gap-3 lg:grid-cols-3">
-              <MiniTable title="Top brokers" sub="By gross booked" head={["Broker", "Loads", "Gross"]} rows={brokers.map(([a, b, c]) => [a, b, c])} />
-              <MiniTable title="Outstanding invoices" sub="Awaiting payment" head={["Invoice", "Status", "Amount"]} rows={invoices.map(([r, s, t, amt]) => [r, <span key={s} className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium ${tone[t]}`}>{s}</span>, amt])} />
-              <MiniTable title="Pending settlements" sub="Not yet paid" head={["Settlement", "Status", "Amount"]} rows={settlements.map(([n, s, t, amt]) => [n, <span key={s} className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium ${tone[t]}`}>{s}</span>, amt])} />
+              <MiniTable icon={<Building2 className="h-3.5 w-3.5" />} title="Top brokers" sub="By gross booked" head={["Broker", "Loads", "Gross"]} rows={brokers.map(([a, b, c]) => [a, b, c])} />
+              <MiniTable icon={<FileText className="h-3.5 w-3.5" />} title="Outstanding invoices" sub="Awaiting payment" head={["Invoice", "Status", "Amount"]} rows={invoices.map(([r, s, t, amt]) => [r, <span key={s} className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium ${tone[t]}`}>{s}</span>, amt])} />
+              <MiniTable icon={<WalletCards className="h-3.5 w-3.5" />} title="Pending settlements" sub="Not yet paid" head={["Settlement", "Status", "Amount"]} rows={settlements.map(([n, s, t, amt]) => [n, <span key={s} className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium ${tone[t]}`}>{s}</span>, amt])} />
             </div>
           </div>
         </div>
