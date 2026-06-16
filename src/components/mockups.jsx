@@ -7,6 +7,11 @@ import { ROUTE_CHI_DAL } from "@/data/route";
 
 const EASE = [0.16, 1, 0.3, 1];
 
+// Shared viewport trigger: fires as a block *starts* entering (15% margin),
+// replays in reverse when it scrolls back out — never runs while off-screen.
+const VIEW = { once: false, margin: "0px 0px -15% 0px" };
+const IN_VIEW = { margin: "0px 0px -15% 0px" }; // for useInView() gates
+
 /* ── Reusable ambient-animation primitives (all gated to viewport) ────────── */
 
 // Stagger container + item — fade/lift children into view in a cascade.
@@ -14,7 +19,7 @@ const RISE = { hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0, transiti
 const POP = { hidden: { opacity: 0, scale: 0.82 }, show: { opacity: 1, scale: 1, transition: { duration: 0.38, ease: EASE } } };
 function Stagger({ children, className = "", gap = 0.07, ref }) {
   return (
-    <motion.div ref={ref} className={className} variants={{ hidden: {}, show: { transition: { staggerChildren: gap, delayChildren: 0.05 } } }} initial="hidden" whileInView="show" viewport={{ once: true, margin: "0px 0px -12% 0px" }}>
+    <motion.div ref={ref} className={className} variants={{ hidden: {}, show: { transition: { staggerChildren: gap, delayChildren: 0.05 } } }} initial="hidden" whileInView="show" viewport={VIEW}>
       {children}
     </motion.div>
   );
@@ -24,18 +29,22 @@ const Item = motion.div;
 // True while the element sits in the viewport — used to pause loops off-screen.
 function useInViewLoop() {
   const ref = useRef(null);
-  const inView = useInView(ref, { margin: "0px 0px -8% 0px" });
+  const inView = useInView(ref, IN_VIEW);
   return [ref, inView];
 }
 
-// Counts a number up from 0 the first time it scrolls into view.
+// Counts up from 0 each time it scrolls into view; resets when it leaves so the
+// count re-plays from the start on re-entry (matches the reverse-on-scroll feel).
 function CountUp({ value, decimals = 0, prefix = "", suffix = "", className = "" }) {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "0px 0px -12% 0px" });
+  const inView = useInView(ref, IN_VIEW);
   const [n, setN] = useState(0);
   useEffect(() => {
-    if (!inView) return;
     let raf, start;
+    if (!inView) {
+      raf = requestAnimationFrame(() => setN(0));
+      return () => cancelAnimationFrame(raf);
+    }
     const dur = 1100;
     const tick = (t) => {
       start ??= t;
@@ -53,7 +62,7 @@ function CountUp({ value, decimals = 0, prefix = "", suffix = "", className = ""
 function Delta({ value, tone = "green" }) {
   const tones = { green: "text-emerald-600", red: "text-rose-500" };
   return (
-    <motion.span initial={{ opacity: 0, x: -4 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: 0.5, ease: EASE }} className={`inline-flex items-center gap-0.5 text-[11px] font-medium ${tones[tone]}`}>
+    <motion.span initial={{ opacity: 0, x: -4 }} whileInView={{ opacity: 1, x: 0 }} viewport={VIEW} transition={{ duration: 0.4, delay: 0.5, ease: EASE }} className={`inline-flex items-center gap-0.5 text-[11px] font-medium ${tones[tone]}`}>
       <ArrowUpRight className="h-3 w-3" />{value}
     </motion.span>
   );
@@ -205,7 +214,7 @@ export function DashboardMock() {
             </Stagger>
 
             {/* Meet HuntBot — full-width banner */}
-            <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, ease: EASE }} className="relative flex items-center gap-4 overflow-hidden rounded-xl px-5 py-4 text-white" style={{ backgroundColor: "#0a0a12", backgroundImage: "linear-gradient(180deg, rgba(10,10,18,0.6), rgba(10,10,18,0) 38%, rgba(10,10,18,0) 62%, rgba(10,10,18,0.6)), linear-gradient(90deg, rgba(10,10,18,0) 5%, rgba(190,30,90,0.6) 22%, rgba(220,90,40,0.55) 34%, rgba(40,165,120,0.5) 48%, rgba(40,90,225,0.6) 64%, rgba(124,60,235,0.55) 80%, rgba(10,10,18,0) 97%)" }}>
+            <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={VIEW} transition={{ duration: 0.5, ease: EASE }} className="relative flex items-center gap-4 overflow-hidden rounded-xl px-5 py-4 text-white" style={{ backgroundColor: "#0a0a12", backgroundImage: "linear-gradient(180deg, rgba(10,10,18,0.6), rgba(10,10,18,0) 38%, rgba(10,10,18,0) 62%, rgba(10,10,18,0.6)), linear-gradient(90deg, rgba(10,10,18,0) 5%, rgba(190,30,90,0.6) 22%, rgba(220,90,40,0.55) 34%, rgba(40,165,120,0.5) 48%, rgba(40,90,225,0.6) 64%, rgba(124,60,235,0.55) 80%, rgba(10,10,18,0) 97%)" }}>
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/25"><Sparkles className="h-5 w-5" /></span>
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-bold">Meet HuntBot</p>
@@ -247,9 +256,9 @@ export function DashboardMock() {
                       <stop offset="100%" stopColor="#737373" stopOpacity="0" />
                     </linearGradient>
                   </defs>
-                  <motion.path d={area} fill="url(#profitFill)" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.45 }} />
-                  <motion.path d={line} fill="none" stroke="#525252" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true, margin: "0px 0px -10% 0px" }} transition={{ duration: 1.1, ease: EASE }} />
-                  {profit.map((v, i) => <motion.circle key={i} cx={px(i)} cy={py(v)} r="2" fill="#fff" stroke="#525252" strokeWidth="1.2" vectorEffect="non-scaling-stroke" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.6 + i * 0.08, duration: 0.3 }} />)}
+                  <motion.path d={area} fill="url(#profitFill)" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={VIEW} transition={{ duration: 0.8, delay: 0.45 }} />
+                  <motion.path d={line} fill="none" stroke="#525252" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={VIEW} transition={{ duration: 1.1, ease: EASE }} />
+                  {profit.map((v, i) => <motion.circle key={i} cx={px(i)} cy={py(v)} r="2" fill="#fff" stroke="#525252" strokeWidth="1.2" vectorEffect="non-scaling-stroke" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={VIEW} transition={{ delay: 0.6 + i * 0.08, duration: 0.3 }} />)}
                 </svg>
                 <div className="flex justify-between text-[10px] text-faint">{months.map((m) => <span key={m}>{m}</span>)}</div>
               </div>
@@ -266,9 +275,9 @@ export function DashboardMock() {
                       <stop offset="100%" stopColor="#737373" stopOpacity="0" />
                     </linearGradient>
                   </defs>
-                  <motion.path d={exp.area} fill="url(#expenseFill)" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.5 }} />
-                  <motion.path d={exp.line} fill="none" stroke="#525252" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true, margin: "0px 0px -10% 0px" }} transition={{ duration: 1.1, delay: 0.1, ease: EASE }} />
-                  {expense.map((v, i) => <motion.circle key={i} cx={px(i)} cy={norm(v, 3500, 5000)} r="2" fill="#fff" stroke="#525252" strokeWidth="1.2" vectorEffect="non-scaling-stroke" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.7 + i * 0.08, duration: 0.3 }} />)}
+                  <motion.path d={exp.area} fill="url(#expenseFill)" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={VIEW} transition={{ duration: 0.8, delay: 0.5 }} />
+                  <motion.path d={exp.line} fill="none" stroke="#525252" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={VIEW} transition={{ duration: 1.1, delay: 0.1, ease: EASE }} />
+                  {expense.map((v, i) => <motion.circle key={i} cx={px(i)} cy={norm(v, 3500, 5000)} r="2" fill="#fff" stroke="#525252" strokeWidth="1.2" vectorEffect="non-scaling-stroke" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={VIEW} transition={{ delay: 0.7 + i * 0.08, duration: 0.3 }} />)}
                 </svg>
                 <div className="flex justify-between text-[10px] text-faint">{months.map((m) => <span key={m}>{m}</span>)}</div>
               </div>
@@ -303,8 +312,8 @@ function AreaChart({ data, lo, hi }) {
           <stop offset="100%" stopColor="#737373" stopOpacity="0" />
         </linearGradient>
       </defs>
-      <motion.path d={area} fill={`url(#${gid})`} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.45 }} />
-      <motion.path d={line} fill="none" stroke="#525252" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true, margin: "0px 0px -10% 0px" }} transition={{ duration: 1.1, ease: EASE }} />
+      <motion.path d={area} fill={`url(#${gid})`} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={VIEW} transition={{ duration: 0.8, delay: 0.45 }} />
+      <motion.path d={line} fill="none" stroke="#525252" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={VIEW} transition={{ duration: 1.1, ease: EASE }} />
     </svg>
   );
 }
@@ -670,7 +679,7 @@ export function BillingMock() {
         </Stagger>
         <div className="mt-4 space-y-2 border-t border-border pt-4 text-sm">
           {lines.map(([l, v]) => (
-            <motion.div key={l} initial={{ opacity: 0, x: -6 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, ease: EASE }} className="flex justify-between text-body"><span>{l}</span><span>{v}</span></motion.div>
+            <motion.div key={l} initial={{ opacity: 0, x: -6 }} whileInView={{ opacity: 1, x: 0 }} viewport={VIEW} transition={{ duration: 0.4, ease: EASE }} className="flex justify-between text-body"><span>{l}</span><span>{v}</span></motion.div>
           ))}
           <div className="flex justify-between border-t border-border pt-2 font-semibold text-ink"><span>Amount due</span><CountUp value={3450} prefix="$" /></div>
         </div>
