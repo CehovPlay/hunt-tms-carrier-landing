@@ -106,9 +106,26 @@ body {
   animation: scanBeam 2.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
+/* Timeline — late/at-risk load tag pulses a soft red ring */
+@keyframes warnPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+  50% { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0); }
+}
+.warn-pulse { animation: warnPulse 1.7s ease-out infinite; }
+
+/* HuntBot chat — typing-indicator dots */
+@keyframes typingDot {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.35; }
+  40% { transform: translateY(-3px); opacity: 1; }
+}
+.typing-dot { animation: typingDot 1s ease-in-out infinite; }
+
 @media (prefers-reduced-motion: reduce) {
   .rise, .bar-grow { animation: none; }
   .route-flow { animation: none; }
   .step-progress { animation: none; transform: scaleX(1); }
   .scan-beam { animation: none; opacity: 0.35; }
+  .warn-pulse { animation: none; }
+  .animate-ping { animation: none; }
+  .typing-dot { animation: none; }
 }

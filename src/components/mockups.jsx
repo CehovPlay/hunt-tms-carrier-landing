@@ -1,13 +1,61 @@
+"use client";
+
 import { Sparkles, Send, CheckCircle2, House, Route, FileText, Receipt, WalletCards, BarChart3, Clock3, MapPin, UserRound, Truck, Settings, Search, Bell, ChevronRight, FileScan, Fuel, Activity, Building2, PanelLeft, LayoutDashboard, AlignLeft, Users, ChevronDown, Download, ArrowUpRight, Plus, ScanLine, Paperclip, StickyNote, AlertTriangle, Gauge, DollarSign, Calendar, Phone, Mail } from "lucide-react";
+import { motion, useInView, AnimatePresence } from "motion/react";
+import { useRef, useState, useEffect } from "react";
 import { ROUTE_CHI_DAL } from "@/data/route";
+
+const EASE = [0.16, 1, 0.3, 1];
+
+/* ── Reusable ambient-animation primitives (all gated to viewport) ────────── */
+
+// Stagger container + item — fade/lift children into view in a cascade.
+const RISE = { hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } } };
+const POP = { hidden: { opacity: 0, scale: 0.82 }, show: { opacity: 1, scale: 1, transition: { duration: 0.38, ease: EASE } } };
+function Stagger({ children, className = "", gap = 0.07, ref }) {
+  return (
+    <motion.div ref={ref} className={className} variants={{ hidden: {}, show: { transition: { staggerChildren: gap, delayChildren: 0.05 } } }} initial="hidden" whileInView="show" viewport={{ once: true, margin: "0px 0px -12% 0px" }}>
+      {children}
+    </motion.div>
+  );
+}
+const Item = motion.div;
+
+// True while the element sits in the viewport — used to pause loops off-screen.
+function useInViewLoop() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { margin: "0px 0px -8% 0px" });
+  return [ref, inView];
+}
+
+// Counts a number up from 0 the first time it scrolls into view.
+function CountUp({ value, decimals = 0, prefix = "", suffix = "", className = "" }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "0px 0px -12% 0px" });
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    let raf, start;
+    const dur = 1100;
+    const tick = (t) => {
+      start ??= t;
+      const p = Math.min((t - start) / dur, 1);
+      setN(value * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [inView, value]);
+  return <span ref={ref} className={className}>{prefix}{n.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}{suffix}</span>;
+}
 
 // Small green "▲ 20.1%" delta pill used across the analytics mockups.
 function Delta({ value, tone = "green" }) {
   const tones = { green: "text-emerald-600", red: "text-rose-500" };
   return (
-    <span className={`inline-flex items-center gap-0.5 text-[11px] font-medium ${tones[tone]}`}>
+    <motion.span initial={{ opacity: 0, x: -4 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: 0.5, ease: EASE }} className={`inline-flex items-center gap-0.5 text-[11px] font-medium ${tones[tone]}`}>
       <ArrowUpRight className="h-3 w-3" />{value}
-    </span>
+    </motion.span>
   );
 }
 
@@ -20,15 +68,15 @@ function MiniTable({ title, sub, head, rows }) {
       <div className="mt-3 grid grid-cols-[1.6fr_1fr_0.8fr] gap-2 text-[10px] uppercase tracking-wide text-faint">
         <span>{head[0]}</span><span>{head[1]}</span><span className="text-right">{head[2]}</span>
       </div>
-      <div className="mt-1 divide-y divide-border">
+      <Stagger className="mt-1 divide-y divide-border" gap={0.06}>
         {rows.map((r, i) => (
-          <div key={i} className="grid grid-cols-[1.6fr_1fr_0.8fr] items-center gap-2 py-2 text-xs">
+          <Item key={i} variants={RISE} className="grid grid-cols-[1.6fr_1fr_0.8fr] items-center gap-2 py-2 text-xs">
             <span className="truncate font-medium text-ink">{r[0]}</span>
             <span className="text-faint">{r[1]}</span>
             <span className="text-right font-medium text-ink">{r[2]}</span>
-          </div>
+          </Item>
         ))}
-      </div>
+      </Stagger>
     </div>
   );
 }
@@ -43,10 +91,10 @@ export function DashboardMock() {
     { group: "Platform", items: [["Analytics", BarChart3, { soon: true }], ["Insights", Activity, { soon: true }], ["Activities", Activity, { soon: true }], ["Company", Building2], ["Team", UserRound, { soon: true }], ["Settings", Settings]] },
   ];
   const kpis = [
-    ["Revenue", "$12,975", "4 loads booked"],
-    ["Open receivables", "$10,425", "3 invoices waiting"],
-    ["Delivered loads", "4", "delivered, invoiced or paid"],
-    ["Payroll outstanding", "$4,846", "6 not closed"],
+    { label: "Revenue", v: 12975, p: "$", hint: "4 loads booked" },
+    { label: "Open receivables", v: 10425, p: "$", hint: "3 invoices waiting" },
+    { label: "Delivered loads", v: 4, hint: "delivered, invoiced or paid" },
+    { label: "Payroll outstanding", v: 4846, p: "$", hint: "6 not closed" },
   ];
   const attention = [
     ["Maintenance · $1,240.00", "Upload receipt"],
@@ -131,15 +179,15 @@ export function DashboardMock() {
 
           <div className="flex-1 space-y-4 overflow-hidden p-5">
             {/* KPI cards */}
-            <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-              {kpis.map(([label, value, hint]) => (
-                <div key={label} className="rounded-xl border border-border bg-white p-4">
+            <Stagger className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+              {kpis.map(({ label, v, p, hint }) => (
+                <Item key={label} variants={RISE} className="rounded-xl border border-border bg-white p-4">
                   <p className="truncate text-xs font-medium text-faint">{label}</p>
-                  <p className="mt-2 truncate text-2xl font-semibold tracking-tight text-ink">{value}</p>
+                  <CountUp value={v} prefix={p} className="mt-2 block truncate text-2xl font-semibold tracking-tight text-ink" />
                   <p className="mt-0.5 truncate text-[11px] text-faint">{hint}</p>
-                </div>
+                </Item>
               ))}
-            </div>
+            </Stagger>
 
             {/* Needs attention · Monthly profit · Meet HuntBot */}
             <div className="grid gap-3 lg:grid-cols-3">
@@ -149,15 +197,15 @@ export function DashboardMock() {
                   <span className="text-[11px] text-faint">View all ›</span>
                 </div>
                 <p className="text-[11px] text-faint">Highest-impact records to open first.</p>
-                <div className="mt-3 space-y-1.5">
+                <Stagger className="mt-3 space-y-1.5" gap={0.08}>
                   {attention.map(([label, detail]) => (
-                    <div key={label} className="flex items-center gap-2.5 rounded-lg border border-border px-3 py-2">
+                    <Item key={label} variants={RISE} className="flex items-center gap-2.5 rounded-lg border border-border px-3 py-2">
                       <span className="flex h-6 w-6 items-center justify-center rounded-full bg-muted text-faint"><FileText className="h-3 w-3" /></span>
                       <div className="min-w-0 flex-1"><p className="truncate text-xs font-medium text-ink">{label}</p><p className="truncate text-[10px] text-faint">{detail}</p></div>
                       <ChevronRight className="h-3.5 w-3.5 text-faint" />
-                    </div>
+                    </Item>
                   ))}
-                </div>
+                </Stagger>
               </div>
 
               <div className="rounded-xl border border-border bg-white p-4">
@@ -170,9 +218,9 @@ export function DashboardMock() {
                       <stop offset="100%" stopColor="#737373" stopOpacity="0" />
                     </linearGradient>
                   </defs>
-                  <path d={area} fill="url(#profitFill)" />
-                  <path d={line} fill="none" stroke="#525252" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-                  {profit.map((v, i) => <circle key={i} cx={px(i)} cy={py(v)} r="2" fill="#fff" stroke="#525252" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />)}
+                  <motion.path d={area} fill="url(#profitFill)" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.45 }} />
+                  <motion.path d={line} fill="none" stroke="#525252" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true, margin: "0px 0px -10% 0px" }} transition={{ duration: 1.1, ease: EASE }} />
+                  {profit.map((v, i) => <motion.circle key={i} cx={px(i)} cy={py(v)} r="2" fill="#fff" stroke="#525252" strokeWidth="1.2" vectorEffect="non-scaling-stroke" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.6 + i * 0.08, duration: 0.3 }} />)}
                 </svg>
                 <div className="flex justify-between text-[10px] text-faint">{months.map((m) => <span key={m}>{m}</span>)}</div>
               </div>
@@ -200,23 +248,24 @@ export function DashboardMock() {
   );
 }
 
-/* Small smooth area chart used by the dispatcher dashboard. */
+/* Small smooth area chart — the line draws itself in when scrolled into view. */
 function AreaChart({ data, lo, hi }) {
   const W = 300, padB = 96;
   const px = (i) => 6 + (i * (W - 12)) / (data.length - 1);
   const py = (v) => padB - ((v - lo) / (hi - lo)) * (padB - 14);
   const line = data.map((v, i) => `${i ? "L" : "M"} ${px(i).toFixed(1)} ${py(v).toFixed(1)}`).join(" ");
   const area = `${line} L ${px(data.length - 1).toFixed(1)} ${padB} L ${px(0).toFixed(1)} ${padB} Z`;
+  const gid = "af" + data.join("_");
   return (
     <svg viewBox="0 0 300 104" preserveAspectRatio="none" className="h-[120px] w-full">
       <defs>
-        <linearGradient id={`af${data[0]}`} x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#737373" stopOpacity="0.16" />
           <stop offset="100%" stopColor="#737373" stopOpacity="0" />
         </linearGradient>
       </defs>
-      <path d={area} fill={`url(#af${data[0]})`} />
-      <path d={line} fill="none" stroke="#525252" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+      <motion.path d={area} fill={`url(#${gid})`} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.45 }} />
+      <motion.path d={line} fill="none" stroke="#525252" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true, margin: "0px 0px -10% 0px" }} transition={{ duration: 1.1, ease: EASE }} />
     </svg>
   );
 }
@@ -230,10 +279,10 @@ export function DispatcherDashboardMock() {
     [["Carriers", Building2], ["Drivers", UserRound], ["Equipment", Truck], ["Brokers", Building2], ["Users", Users]],
   ];
   const kpis = [
-    ["Gross revenue", "$1,545,231", "this month"],
-    ["Dispatchers revenue", "$35,231", "commission earned"],
-    ["Loads volume", "1,102", "delivered loads"],
-    ["Active dispatchers", "13", "on shift"],
+    { label: "Gross revenue", v: 1545231, p: "$", hint: "this month" },
+    { label: "Dispatchers revenue", v: 35231, p: "$", hint: "commission earned" },
+    { label: "Loads volume", v: 1102, hint: "delivered loads" },
+    { label: "Active dispatchers", v: 13, hint: "on shift" },
   ];
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
   const dispatchers = [["Marcus Lee", "42", "$184,200"], ["Priya Shah", "38", "$152,400"], ["Diego Ramos", "31", "$127,500"], ["Anna Kovacs", "24", "$98,000"]];
@@ -282,15 +331,15 @@ export function DispatcherDashboardMock() {
 
           <div className="flex-1 space-y-4 overflow-hidden p-5">
             {/* KPIs */}
-            <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-              {kpis.map(([label, value, hint]) => (
-                <div key={label} className="rounded-xl border border-border bg-white p-4">
+            <Stagger className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+              {kpis.map(({ label, v, p, hint }) => (
+                <Item key={label} variants={RISE} className="rounded-xl border border-border bg-white p-4">
                   <p className="truncate text-xs font-medium text-faint">{label}</p>
-                  <p className="mt-2 truncate text-2xl font-semibold tracking-tight text-ink">{value}</p>
+                  <CountUp value={v} prefix={p} className="mt-2 block truncate text-2xl font-semibold tracking-tight text-ink" />
                   <p className="mt-0.5 truncate text-[11px] text-faint">{hint}</p>
-                </div>
+                </Item>
               ))}
-            </div>
+            </Stagger>
 
             {/* Charts */}
             <div className="grid gap-3 lg:grid-cols-2">
@@ -422,33 +471,35 @@ function Badge({ tone = "blue", children }) {
 }
 
 export function LoadsMock() {
+  const kpis = [["Revenue", 12975, "$"], ["Receivables", 10425, "$"], ["Delivered", 2, ""], ["Payroll", 4169, "$"]];
+  const rows = [
+    ["#9157553", "Chicago → Dallas", "Gudelio Ramos", "#1974", "$3,450", "green", "Ready"],
+    ["#9157619", "Austin → Denver", "Andrew Stone", "#2042", "$2,875", "amber", "Review"],
+    ["#9157901", "Omaha → Phoenix", "Maks Orlov", "#1888", "$4,100", "green", "Paid"],
+  ];
   return (
     <Frame title="hunterTMS · Loads">
-      <div className="grid grid-cols-4 gap-px bg-border">
-        {[["Revenue", "$12,975"], ["Receivables", "$10,425"], ["Delivered", "2"], ["Payroll", "$4,169"]].map(([l, v]) => (
-          <div key={l} className="bg-white px-4 py-3.5">
+      <Stagger className="grid grid-cols-4 gap-px bg-border" gap={0.06}>
+        {kpis.map(([l, v, p]) => (
+          <Item key={l} variants={RISE} className="bg-white px-4 py-3.5">
             <p className="text-[10px] uppercase tracking-wide text-faint">{l}</p>
-            <p className="mt-1 text-base font-semibold text-ink">{v}</p>
-          </div>
+            <CountUp value={v} prefix={p} className="mt-1 block text-base font-semibold text-ink" />
+          </Item>
         ))}
-      </div>
+      </Stagger>
       <div className="grid grid-cols-[1.4fr_1fr_0.8fr_0.8fr] border-t border-border bg-muted/40 px-4 py-2 text-[10px] uppercase tracking-wide text-faint">
         <span>Load</span><span>Driver</span><span>Rate</span><span className="text-right">Payroll</span>
       </div>
-      <div className="divide-y divide-border border-t border-border">
-        {[
-          ["#9157553", "Chicago → Dallas", "Gudelio Ramos", "#1974", "$3,450", "green", "Ready"],
-          ["#9157619", "Austin → Denver", "Andrew Stone", "#2042", "$2,875", "amber", "Review"],
-          ["#9157901", "Omaha → Phoenix", "Maks Orlov", "#1888", "$4,100", "green", "Paid"],
-        ].map(([id, route, drv, truck, rate, tone, st]) => (
-          <div key={id} className="grid grid-cols-[1.4fr_1fr_0.8fr_0.8fr] items-center px-4 py-3 text-sm">
+      <Stagger className="divide-y divide-border border-t border-border" gap={0.08}>
+        {rows.map(([id, route, drv, truck, rate, tone, st]) => (
+          <Item key={id} variants={RISE} className="grid grid-cols-[1.4fr_1fr_0.8fr_0.8fr] items-center px-4 py-3 text-sm">
             <div className="min-w-0"><p className="font-medium text-ink">{id}</p><p className="truncate text-xs text-faint">{route}</p></div>
             <div className="min-w-0"><p className="truncate text-ink">{drv}</p><p className="truncate text-xs text-faint">{truck}</p></div>
             <span className="font-medium text-ink">{rate}</span>
             <span className="flex justify-end"><Badge tone={tone}>{st}</Badge></span>
-          </div>
+          </Item>
         ))}
-      </div>
+      </Stagger>
     </Frame>
   );
 }
@@ -564,6 +615,8 @@ export function TimelineMock() {
 }
 
 export function BillingMock() {
+  const meta = [["Bill to", "Blue Arrow Brokerage"], ["Terms", "Net 30"], ["Route", "Chicago → Dallas"], ["Distance", "1,432 mi"]];
+  const lines = [["Line haul", "$3,250"], ["Fuel surcharge", "$200"]];
   return (
     <Frame title="hunterTMS · Invoice">
       <div className="p-5">
@@ -571,18 +624,21 @@ export function BillingMock() {
           <div><p className="text-sm font-bold text-ink">Hunt Carrier LLC</p><p className="text-[11px] text-faint">MC-1048291 · DOT 4203694</p></div>
           <div className="text-right"><p className="text-sm font-bold uppercase tracking-tight text-ink">Invoice</p><p className="text-[11px] text-faint">#101907</p></div>
         </div>
-        <div className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 border-t border-border pt-4 text-xs">
-          <div><p className="text-faint">Bill to</p><p className="font-medium text-ink">Blue Arrow Brokerage</p></div>
-          <div><p className="text-faint">Terms</p><p className="font-medium text-ink">Net 30</p></div>
-          <div><p className="text-faint">Route</p><p className="font-medium text-ink">Chicago → Dallas</p></div>
-          <div><p className="text-faint">Distance</p><p className="font-medium text-ink">1,432 mi</p></div>
-        </div>
+        <Stagger className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 border-t border-border pt-4 text-xs" gap={0.05}>
+          {meta.map(([l, v]) => (
+            <Item key={l} variants={RISE}><p className="text-faint">{l}</p><p className="font-medium text-ink">{v}</p></Item>
+          ))}
+        </Stagger>
         <div className="mt-4 space-y-2 border-t border-border pt-4 text-sm">
-          <div className="flex justify-between text-body"><span>Line haul</span><span>$3,250</span></div>
-          <div className="flex justify-between text-body"><span>Fuel surcharge</span><span>$200</span></div>
-          <div className="flex justify-between border-t border-border pt-2 font-semibold text-ink"><span>Amount due</span><span>$3,450</span></div>
+          {lines.map(([l, v]) => (
+            <motion.div key={l} initial={{ opacity: 0, x: -6 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, ease: EASE }} className="flex justify-between text-body"><span>{l}</span><span>{v}</span></motion.div>
+          ))}
+          <div className="flex justify-between border-t border-border pt-2 font-semibold text-ink"><span>Amount due</span><CountUp value={3450} prefix="$" /></div>
         </div>
-        <div className="mt-4 flex items-center gap-2"><Badge tone="green">Sent to factor</Badge><Badge tone="grey">Net 30</Badge></div>
+        <Stagger className="mt-4 flex items-center gap-2" gap={0.1}>
+          <Item variants={POP}><Badge tone="green">Sent to factor</Badge></Item>
+          <Item variants={POP}><Badge tone="grey">Net 30</Badge></Item>
+        </Stagger>
       </div>
     </Frame>
   );
@@ -598,17 +654,17 @@ export function ExpenseMock() {
     <Frame title="hunterTMS · Expenses">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <p className="text-sm font-semibold text-ink">Expenses (3)</p>
-        <span className="text-sm font-semibold text-ink">−$712.12</span>
+        <CountUp value={712.12} decimals={2} prefix="−$" className="text-sm font-semibold text-ink" />
       </div>
-      <div className="divide-y divide-border">
+      <Stagger className="divide-y divide-border" gap={0.09}>
         {rows.map(([type, date, amt, tone, st]) => (
-          <div key={type} className="px-4 py-3 text-sm">
+          <Item key={type} variants={RISE} className="px-4 py-3 text-sm">
             <div className="flex items-baseline justify-between"><p className="font-semibold text-ink">{type}</p><span className="font-semibold text-ink">{amt}</span></div>
             <p className="mt-0.5 text-xs text-faint">{date}</p>
             <div className="mt-2 flex items-center justify-between"><span className="text-faint">Status</span><Badge tone={tone}>{st}</Badge></div>
-          </div>
+          </Item>
         ))}
-      </div>
+      </Stagger>
     </Frame>
   );
 }
@@ -622,17 +678,18 @@ export function PayrollMock() {
           <Badge tone="green">Ready</Badge>
         </div>
         <div className="mt-4 space-y-2 border-t border-border pt-4 text-sm">
-          <div className="flex justify-between text-body"><span>Linehaul (1,432 mi × $0.60)</span><span>$859.20</span></div>
-          <div className="flex justify-between text-body"><span>Bonus</span><span>$150.00</span></div>
-          <div className="flex justify-between text-body"><span>Deductions</span><span>−$120.00</span></div>
-          <div className="flex justify-between text-body"><span>Reimbursements</span><span>$84.90</span></div>
-          <div className="flex justify-between border-t border-border pt-2 text-base font-semibold text-ink"><span>Net pay</span><span>$974.10</span></div>
+          <Stagger className="space-y-2" gap={0.07}>
+            {[["Linehaul (1,432 mi × $0.60)", "$859.20"], ["Bonus", "$150.00"], ["Deductions", "−$120.00"], ["Reimbursements", "$84.90"]].map(([l, v]) => (
+              <Item key={l} variants={RISE} className="flex justify-between text-body"><span>{l}</span><span>{v}</span></Item>
+            ))}
+          </Stagger>
+          <div className="flex justify-between border-t border-border pt-2 text-base font-semibold text-ink"><span>Net pay</span><CountUp value={974.10} decimals={2} prefix="$" /></div>
         </div>
-        <div className="mt-4 grid grid-cols-3 gap-2">
+        <Stagger className="mt-4 grid grid-cols-3 gap-2" gap={0.08}>
           {[["Driver", "Gudelio R."], ["Method", "Per mile"], ["Loads", "3"]].map(([l, v]) => (
-            <div key={l} className="rounded-lg border border-border bg-muted/40 px-3 py-2"><p className="text-[10px] uppercase text-faint">{l}</p><p className="text-xs font-medium text-ink">{v}</p></div>
+            <Item key={l} variants={POP} className="rounded-lg border border-border bg-muted/40 px-3 py-2"><p className="text-[10px] uppercase text-faint">{l}</p><p className="text-xs font-medium text-ink">{v}</p></Item>
           ))}
-        </div>
+        </Stagger>
       </div>
     </Frame>
   );
@@ -650,28 +707,60 @@ export function ComplianceMock() {
         <div><p className="text-sm font-semibold text-ink">Gudelio Ramos</p><p className="text-[11px] text-faint">Company driver · Zigzag Carrier LLC</p></div>
         <Badge tone="green">Active</Badge>
       </div>
-      <div className="divide-y divide-border">
+      <Stagger className="divide-y divide-border" gap={0.09}>
         {docs.map(([name, sub, tone, st]) => (
-          <div key={name} className="flex items-center justify-between px-4 py-3 text-sm">
+          <Item key={name} variants={RISE} className="flex items-center justify-between px-4 py-3 text-sm">
             <div><p className="font-medium text-ink">{name}</p><p className="text-xs text-faint">{sub}</p></div>
             <Badge tone={tone}>{st}</Badge>
-          </div>
+          </Item>
         ))}
-      </div>
-      <div className="flex flex-wrap gap-1.5 border-t border-border p-4">
-        {["Hazmat", "Tanker", "TWIC"].map((e) => <span key={e} className="rounded-md border border-border bg-muted/60 px-2 py-0.5 text-[11px] text-ink">{e}</span>)}
-      </div>
+      </Stagger>
+      <Stagger className="flex flex-wrap gap-1.5 border-t border-border p-4" gap={0.08}>
+        {["Hazmat", "Tanker", "TWIC"].map((e) => <Item key={e} variants={POP} className="rounded-md border border-border bg-muted/60 px-2 py-0.5 text-[11px] text-ink">{e}</Item>)}
+      </Stagger>
     </Frame>
   );
 }
 
 export function HuntBotMock() {
+  const msgs = [
+    { who: "bot", text: "Hi, I'm HuntBot. Ask me to open a screen, generate payroll, or compare BOL vs Rate Con." },
+    { who: "user", text: "Generate payroll for all dispatchers last week" },
+    { who: "bot", text: "Generated 3 dispatcher settlements · $520 commission total.", link: "Open payroll →" },
+  ];
+  const [ref, inView] = useInViewLoop();
+  const [step, setStep] = useState(0);
+  const [typing, setTyping] = useState(false);
+  useEffect(() => {
+    if (!inView) return;
+    let n = 0, t;
+    const run = () => {
+      if (n >= msgs.length) {
+        t = setTimeout(() => { n = 0; setStep(0); setTyping(false); t = setTimeout(run, 500); }, 2800);
+        return;
+      }
+      setTyping(true);
+      t = setTimeout(() => { setTyping(false); n += 1; setStep(n); t = setTimeout(run, 650); }, 850);
+    };
+    t = setTimeout(run, 350);
+    return () => clearTimeout(t);
+  }, [inView]); // eslint-disable-line react-hooks/exhaustive-deps
+  const next = step < msgs.length ? msgs[step] : null;
   return (
     <Frame title="hunterTMS · HuntBot">
-      <div className="space-y-3 p-4">
-        <div className="flex justify-start"><div className="max-w-[80%] rounded-2xl bg-muted px-3 py-2 text-sm text-ink">Hi, I&apos;m HuntBot. Ask me to open a screen, generate payroll, or compare BOL vs Rate Con.</div></div>
-        <div className="flex justify-end"><div className="max-w-[80%] rounded-2xl bg-brand px-3 py-2 text-sm text-white">Generate payroll for all dispatchers last week</div></div>
-        <div className="flex justify-start"><div className="max-w-[85%] rounded-2xl bg-muted px-3 py-2 text-sm text-ink">Generated 3 dispatcher settlements · $520 commission total. <span className="font-medium text-brand">Open payroll →</span></div></div>
+      <div ref={ref} className="min-h-[176px] space-y-3 p-4">
+        {msgs.slice(0, step).map((m, i) => (
+          <motion.div key={i} initial={{ opacity: 0, y: 8, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.35, ease: EASE }} className={`flex ${m.who === "user" ? "justify-end" : "justify-start"}`}>
+            <div className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${m.who === "user" ? "bg-brand text-white" : "bg-muted text-ink"}`}>{m.text}{m.link ? <> <span className="font-medium text-brand">{m.link}</span></> : null}</div>
+          </motion.div>
+        ))}
+        {typing && next ? (
+          <div className={`flex ${next.who === "user" ? "justify-end" : "justify-start"}`}>
+            <div className={`flex gap-1 rounded-2xl px-3 py-2.5 ${next.who === "user" ? "bg-brand" : "bg-muted"}`}>
+              {[0, 1, 2].map((dd) => <span key={dd} className={`typing-dot h-1.5 w-1.5 rounded-full ${next.who === "user" ? "bg-white/80" : "bg-faint"}`} style={{ animationDelay: `${dd * 0.15}s` }} />)}
+            </div>
+          </div>
+        ) : null}
       </div>
       <div className="border-t border-border p-3">
         <div className="mb-2 flex flex-wrap gap-1.5">
@@ -737,7 +826,7 @@ export function DispatchTimelineMock() {
                 const delay = (k++ * 0.1).toFixed(2);
                 return (
                   <div key={i} className="bar-grow absolute" style={{ left: `${b.l}%`, width: `${b.w}%`, top: 12, animationDelay: `${delay}s` }}>
-                    <div className="flex items-center gap-1 rounded-t-[6px] px-1.5 py-0.5 text-[9px] font-semibold leading-none text-white" style={{ backgroundColor: color }}>
+                    <div className={`flex items-center gap-1 rounded-t-[6px] px-1.5 py-0.5 text-[9px] font-semibold leading-none text-white ${b.warn ? "warn-pulse" : ""}`} style={{ backgroundColor: color }}>
                       <span className="truncate">{b.id}</span>
                       <MapPin className="ml-auto h-2.5 w-2.5 shrink-0 text-white/90" />
                       {b.warn ? <AlertTriangle className="h-2.5 w-2.5 shrink-0" /> : null}
@@ -757,34 +846,58 @@ export function DispatchTimelineMock() {
   );
 }
 
-/* 2 · View totals — revenue / miles / RPM by time range, with a trend. */
+/* 2 · View totals — auto-cycles Day/Week/Month; numbers and trend re-animate. */
 export function ViewTotalsMock() {
-  const days = ["Mon 10", "Tue 11", "Wed 12", "Thu 13", "Fri 14", "Sat 15"];
+  const ranges = ["Day", "Week", "Month"];
+  const DATA = {
+    Day: { rev: 51508, miles: 732, rpm: 4.05, rd: "5.4%", md: "3.1%", pd: "2.0%", chart: [120, 138, 132, 165, 150, 196], axis: ["8a", "10a", "12p", "2p", "4p", "6p"] },
+    Week: { rev: 360820, miles: 5120, rpm: 4.12, rd: "9.8%", md: "6.4%", pd: "4.2%", chart: [80, 120, 104, 150, 168, 210], axis: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] },
+    Month: { rev: 1545231, miles: 21950, rpm: 4.20, rd: "20.1%", md: "12.4%", pd: "20.1%", chart: [110, 142, 128, 182, 158, 232], axis: ["W1", "W2", "W3", "W4", "W5", "W6"] },
+  };
+  const [ref, inView] = useInViewLoop();
+  const [ri, setRi] = useState(2);
+  useEffect(() => {
+    if (!inView) return;
+    const id = setInterval(() => setRi((p) => (p + 1) % 3), 2600);
+    return () => clearInterval(id);
+  }, [inView]);
+  const r = ranges[ri];
+  const d = DATA[r];
   const stats = [
-    ["Total revenue", "$1,545,231", "20.1%", DollarSign],
-    ["Total miles", "21,950 mi", "12.4%", Gauge],
-    ["Rate per mile", "$4.20", "20.1%", BarChart3],
+    { label: "Total revenue", Icon: DollarSign, val: `$${d.rev.toLocaleString("en-US")}`, delta: d.rd },
+    { label: "Total miles", Icon: Gauge, val: `${d.miles.toLocaleString("en-US")} mi`, delta: d.md },
+    { label: "Rate per mile", Icon: BarChart3, val: `$${d.rpm.toFixed(2)}`, delta: d.pd },
   ];
   return (
     <Frame title="hunterTMS · Totals">
-      <div className="flex items-center justify-between border-b border-border px-4 py-3">
+      <div ref={ref} className="flex items-center justify-between border-b border-border px-4 py-3">
         <p className="text-sm font-semibold text-ink">Totals</p>
         <div className="flex items-center gap-0.5 rounded-lg border border-border bg-muted/50 p-0.5 text-[11px]">
-          {["Day", "Week", "Month"].map((t) => <span key={t} className={`rounded-md px-2.5 py-1 ${t === "Month" ? "bg-white font-medium text-ink shadow-[0_1px_2px_rgba(23,23,23,0.06)]" : "text-faint"}`}>{t}</span>)}
+          {ranges.map((t) => (
+            <span key={t} className={`relative rounded-md px-2.5 py-1 transition-colors duration-300 ${t === r ? "font-medium text-ink" : "text-faint"}`}>
+              {t === r ? <motion.span layoutId="totals-seg" className="absolute inset-0 rounded-md bg-white shadow-[0_1px_2px_rgba(23,23,23,0.06)]" transition={{ type: "spring", stiffness: 380, damping: 32 }} /> : null}
+              <span className="relative">{t}</span>
+            </span>
+          ))}
         </div>
       </div>
       <div className="grid grid-cols-3 divide-x divide-border border-b border-border">
-        {stats.map(([label, value, delta, Icon]) => (
-          <div key={label} className="px-4 py-3.5">
-            <div className="flex items-center gap-1.5 text-faint"><Icon className="h-3.5 w-3.5" /><span className="truncate text-[11px] font-medium">{label}</span></div>
-            <p className="mt-1.5 truncate text-lg font-semibold tracking-tight text-ink">{value}</p>
-            <div className="mt-0.5 flex items-center gap-1"><Delta value={delta} /><span className="hidden text-[10px] text-faint sm:inline">vs last month</span></div>
+        {stats.map((s) => (
+          <div key={s.label} className="px-4 py-3.5">
+            <div className="flex items-center gap-1.5 text-faint"><s.Icon className="h-3.5 w-3.5" /><span className="truncate text-[11px] font-medium">{s.label}</span></div>
+            <div className="mt-1.5 h-[26px] overflow-hidden">
+              <motion.p key={s.val} initial={{ opacity: 0, y: 9 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: EASE }} className="truncate text-lg font-semibold tracking-tight text-ink">{s.val}</motion.p>
+            </div>
+            <div className="mt-0.5 flex items-center gap-1">
+              <span className="inline-flex items-center gap-0.5 text-[11px] font-medium text-emerald-600"><ArrowUpRight className="h-3 w-3" />{s.delta}</span>
+              <span className="hidden text-[10px] text-faint sm:inline">vs last</span>
+            </div>
           </div>
         ))}
       </div>
       <div className="p-4">
-        <AreaChart data={[120, 138, 132, 165, 150, 196]} lo={100} hi={210} />
-        <div className="flex justify-between text-[10px] text-faint">{days.map((d) => <span key={d}>{d}</span>)}</div>
+        <AreaChart key={r} data={d.chart} lo={Math.min(...d.chart) - 30} hi={Math.max(...d.chart) + 20} />
+        <div className="flex justify-between text-[10px] text-faint">{d.axis.map((x, i) => <span key={i}>{x}</span>)}</div>
       </div>
     </Frame>
   );
@@ -799,16 +912,26 @@ export function DispatchMapMock() {
     ["Daniel Moore", "El Paso, TX", "active", "On time"],
   ];
   const dot = { active: "bg-emerald-500", en_route: "bg-amber-500", late: "bg-rose-500" };
+  const [ref, inView] = useInViewLoop();
+  const [hi, setHi] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    const id = setInterval(() => setHi((p) => (p + 1) % drivers.length), 1700);
+    return () => clearInterval(id);
+  }, [inView, drivers.length]);
   return (
     <Frame title="hunterTMS · Map">
       <div className="relative">
         <MapCanvas height={340} labels={false} />
-        <div className="absolute right-3 top-3 w-[210px] max-w-[58%] rounded-xl border border-border bg-white/95 p-2 shadow-[0_12px_40px_-12px_rgba(23,23,23,0.25)] backdrop-blur">
+        <div ref={ref} className="absolute right-3 top-3 w-[210px] max-w-[58%] rounded-xl border border-border bg-white/95 p-2 shadow-[0_12px_40px_-12px_rgba(23,23,23,0.25)] backdrop-blur">
           <p className="px-1.5 pb-1 pt-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-faint">Drivers · 4 live</p>
           <div className="space-y-0.5">
-            {drivers.map(([name, city, tone, st]) => (
-              <div key={name} className="flex items-center gap-2 rounded-lg px-1.5 py-1.5">
-                <span className={`h-2 w-2 shrink-0 rounded-full ${dot[tone]}`} />
+            {drivers.map(([name, city, tone, st], i) => (
+              <div key={name} className={`flex items-center gap-2 rounded-lg px-1.5 py-1.5 transition-colors duration-500 ${i === hi ? "bg-muted/70" : ""}`}>
+                <span className="relative flex h-2 w-2 shrink-0 items-center justify-center">
+                  {(i === hi || tone === "late") ? <span className={`absolute inline-flex h-2 w-2 rounded-full opacity-60 ${dot[tone]} animate-ping`} /> : null}
+                  <span className={`relative inline-flex h-2 w-2 rounded-full ${dot[tone]}`} />
+                </span>
                 <div className="min-w-0 flex-1"><p className="truncate text-xs font-medium text-ink">{name}</p><p className="truncate text-[10px] text-faint">{city}</p></div>
                 <span className="shrink-0 text-[10px] text-faint">{st}</span>
               </div>
@@ -836,32 +959,34 @@ export function LoadInfoMock() {
           <p className="mb-3 text-[10px] font-medium uppercase tracking-[0.12em] text-faint">Route · 3 stops</p>
           <div className="relative">
             <span className="absolute left-[13px] top-3 bottom-7 w-px bg-border" />
-            {stops.map(([badge, addr, sub, bg], i) => (
-              <div key={i} className="relative flex items-start gap-3 py-1.5">
-                <span className={`relative z-10 flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full text-[10px] font-semibold text-white ${bg}`}>{badge}</span>
-                <div className="min-w-0 flex-1 pt-0.5">
-                  <p className="truncate text-[13px] font-medium text-ink">{addr}</p>
-                  <p className="text-[11px] text-faint">{sub}</p>
-                </div>
-              </div>
-            ))}
+            <Stagger gap={0.12}>
+              {stops.map(([badge, addr, sub, bg], i) => (
+                <Item key={i} variants={RISE} className="relative flex items-start gap-3 py-1.5">
+                  <span className={`relative z-10 flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full text-[10px] font-semibold text-white ${bg}`}>{badge}</span>
+                  <div className="min-w-0 flex-1 pt-0.5">
+                    <p className="truncate text-[13px] font-medium text-ink">{addr}</p>
+                    <p className="text-[11px] text-faint">{sub}</p>
+                  </div>
+                </Item>
+              ))}
+            </Stagger>
           </div>
         </div>
         <div className="p-4">
-          <div className="grid grid-cols-2 gap-x-3 gap-y-3">
+          <Stagger className="grid grid-cols-2 gap-x-3 gap-y-3" gap={0.06}>
             {meta.map(([l, v]) => (
-              <div key={l}><p className="text-[10px] uppercase tracking-wide text-faint">{l}</p><p className="mt-0.5 text-[13px] font-medium text-ink">{v}</p></div>
+              <Item key={l} variants={RISE}><p className="text-[10px] uppercase tracking-wide text-faint">{l}</p><p className="mt-0.5 text-[13px] font-medium text-ink">{v}</p></Item>
             ))}
-          </div>
+          </Stagger>
           <p className="mb-2 mt-4 text-[10px] font-medium uppercase tracking-[0.12em] text-faint">Documents</p>
-          <div className="flex gap-2">
+          <Stagger className="flex gap-2" gap={0.1}>
             {docs.map(([l, bg]) => (
-              <div key={l} className="flex h-12 w-12 flex-col items-center justify-center gap-1 rounded-lg border border-border bg-white">
+              <Item key={l} variants={POP} className="flex h-12 w-12 flex-col items-center justify-center gap-1 rounded-lg border border-border bg-white">
                 <span className={`rounded px-1 py-0.5 text-[8px] font-bold text-white ${bg}`}>{l}</span>
                 <Paperclip className="h-3 w-3 text-faint" />
-              </div>
+              </Item>
             ))}
-          </div>
+          </Stagger>
           <div className="mt-4 flex items-start gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2">
             <StickyNote className="mt-0.5 h-3.5 w-3.5 shrink-0 text-faint" />
             <p className="text-[11px] leading-relaxed text-body">Detention approved at delivery — 2h at $45/h. Lumper receipt attached.</p>
@@ -881,19 +1006,36 @@ export function LoadHistoryMock() {
     ["BOL uploaded · delivery confirmed", "Michael Johnson", "03/27/2025 · 18:30", "bg-emerald-500"],
     ["Invoice #101907 sent to factor", "System", "03/27/2025 · 18:31", "bg-emerald-500"],
   ];
+  const [ref, inView] = useInViewLoop();
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    let i = 0;
+    const id = setInterval(() => {
+      i = i >= events.length + 3 ? 0 : i + 1;
+      setN(Math.min(i, events.length));
+    }, 640);
+    return () => clearInterval(id);
+  }, [inView, events.length]);
   return (
     <Frame title="hunterTMS · Load history">
-      <div className="relative p-5">
+      <div ref={ref} className="relative p-5">
         <span className="absolute left-[26px] top-8 bottom-9 w-px bg-border" />
-        {events.map(([action, who, ts, bg], i) => (
-          <div key={i} className="relative flex items-start gap-3 py-2">
-            <span className={`relative z-10 mt-0.5 flex h-[14px] w-[14px] shrink-0 items-center justify-center rounded-full ${bg}`}><span className="h-1.5 w-1.5 rounded-full bg-white" /></span>
-            <div className="min-w-0 flex-1">
-              <p className="text-[13px] font-medium text-ink">{action}</p>
-              <p className="mt-0.5 text-[11px] text-faint">{who} · {ts}</p>
-            </div>
-          </div>
-        ))}
+        {events.map(([action, who, ts, bg], i) => {
+          const on = i < n;
+          return (
+            <motion.div key={i} animate={{ opacity: on ? 1 : 0.22, x: on ? 0 : -5 }} transition={{ duration: 0.4, ease: EASE }} className="relative flex items-start gap-3 py-2">
+              <span className={`relative z-10 mt-0.5 flex h-[14px] w-[14px] shrink-0 items-center justify-center rounded-full ${on ? bg : "bg-border"}`}>
+                <span className="h-1.5 w-1.5 rounded-full bg-white" />
+                {on && i === n - 1 ? <span className={`absolute inline-flex h-[14px] w-[14px] rounded-full opacity-50 ${bg} animate-ping`} /> : null}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-[13px] font-medium text-ink">{action}</p>
+                <p className="mt-0.5 text-[11px] text-faint">{who} · {ts}</p>
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
     </Frame>
   );
@@ -909,20 +1051,27 @@ export function StatusViewMock() {
     ["TONU", "Truck Ordered Not Used — booked but canceled or not loaded.", "#ef4444", "bg-rose-50 text-rose-500"],
     ["Billed", "An invoice has been issued for the load.", "#3b82f6", "bg-brand-soft text-brand"],
   ];
+  const [ref, inView] = useInViewLoop();
+  const [cur, setCur] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    const id = setInterval(() => setCur((p) => (p + 1) % statuses.length), 1500);
+    return () => clearInterval(id);
+  }, [inView, statuses.length]);
   return (
     <Frame title="hunterTMS · Load statuses">
-      <div className="grid gap-px bg-border sm:grid-cols-2">
-        {statuses.map(([label, desc, accent, badge]) => (
-          <div key={label} className="relative bg-white p-4 pl-5">
+      <Stagger ref={ref} className="grid gap-px bg-border sm:grid-cols-2" gap={0.06}>
+        {statuses.map(([label, desc, accent, badge], i) => (
+          <Item key={label} variants={RISE} className="relative bg-white p-4 pl-5">
             <span className="absolute left-0 top-0 h-full w-1" style={{ backgroundColor: accent }} />
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-medium text-faint">Status</span>
-              <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${badge}`}>{label}</span>
+              <motion.span animate={i === cur ? { scale: [1, 1.09, 1] } : { scale: 1 }} transition={{ duration: 0.6, ease: EASE }} className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${badge}`}>{label}</motion.span>
             </div>
             <p className="mt-2 text-[12px] leading-relaxed text-body">{desc}</p>
-          </div>
+          </Item>
         ))}
-      </div>
+      </Stagger>
     </Frame>
   );
 }
@@ -934,9 +1083,21 @@ export function RcScannerMock() {
     ["Delivery", "3229 JACFL UPS JACKS", "4420 Imeson RD, Jacksonville, FL"],
   ];
   const cells = [["Size & Type", "53' TORD"], ["Pieces", "20"], ["Weight", "45,000 lb"], ["Miles", "1,010 mi"], ["Rate", "$4,200.00"], ["Equipment", "Dry Van"]];
+  const total = fields.length + cells.length; // 8
+  const [ref, inView] = useInViewLoop();
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    let i = 0;
+    const id = setInterval(() => {
+      i = i >= total + 4 ? 0 : i + 1; // reveal, hold, then restart with the next beam pass
+      setN(Math.min(i, total));
+    }, 300);
+    return () => clearInterval(id);
+  }, [inView, total]);
   return (
     <Frame title="hunterTMS · AI RC Scanner">
-      <div className="grid md:grid-cols-2">
+      <div ref={ref} className="grid md:grid-cols-2">
         <div className="flex flex-col border-b border-border bg-muted/40 p-5 md:border-b-0 md:border-r">
           <div className="relative flex-1 overflow-hidden rounded-lg border border-border bg-white p-4 shadow-sm">
             <p className="text-[11px] font-semibold text-ink">Rate confirmation</p>
@@ -951,19 +1112,19 @@ export function RcScannerMock() {
           <span className="mt-3 inline-flex w-fit items-center gap-1.5 rounded-full bg-brand-soft px-2.5 py-1 text-[11px] font-medium text-brand"><ScanLine className="h-3.5 w-3.5" /> Scanning…</span>
         </div>
         <div className="p-5">
-          <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-500" /><p className="text-sm font-semibold text-ink">Extracted</p><span className="ml-auto rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-faint">8 fields</span></div>
+          <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-500" /><p className="text-sm font-semibold text-ink">Extracted</p><span className="ml-auto rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium tabular-nums text-faint">{n} / {total} fields</span></div>
           <div className="mt-3 space-y-2">
-            {fields.map(([l, name, addr]) => (
-              <div key={l} className="rounded-lg border border-border bg-white p-2.5">
+            {fields.map(([l, name, addr], i) => (
+              <motion.div key={l} animate={{ opacity: i < n ? 1 : 0.2, y: i < n ? 0 : 6 }} transition={{ duration: 0.35, ease: EASE }} className="rounded-lg border border-border bg-white p-2.5">
                 <p className="text-[10px] uppercase tracking-wide text-faint">{l}</p>
                 <p className="truncate text-[12px] font-medium text-ink">{name}</p>
                 <p className="truncate text-[11px] text-faint">{addr}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
           <div className="mt-2 grid grid-cols-3 gap-2">
-            {cells.map(([l, v]) => (
-              <div key={l} className="rounded-lg border border-border bg-muted/40 px-2 py-1.5"><p className="truncate text-[9px] uppercase tracking-wide text-faint">{l}</p><p className="truncate text-[11px] font-medium text-ink">{v}</p></div>
+            {cells.map(([l, v], i) => (
+              <motion.div key={l} animate={{ opacity: fields.length + i < n ? 1 : 0.2, y: fields.length + i < n ? 0 : 6 }} transition={{ duration: 0.35, ease: EASE }} className="rounded-lg border border-border bg-muted/40 px-2 py-1.5"><p className="truncate text-[9px] uppercase tracking-wide text-faint">{l}</p><p className="truncate text-[11px] font-medium text-ink">{v}</p></motion.div>
             ))}
           </div>
         </div>
@@ -982,6 +1143,13 @@ export function TeamMock() {
     ["JM", "James Miller", "Dispatcher", "active"],
     ["OW", "Olivia Wilson", "Dispatcher", "invited"],
   ];
+  const [ref, inView] = useInViewLoop();
+  const [hi, setHi] = useState(-1);
+  useEffect(() => {
+    if (!inView) return;
+    const id = setInterval(() => setHi((p) => (p + 1) % people.length), 1600);
+    return () => clearInterval(id);
+  }, [inView, people.length]);
   return (
     <Frame title="hunterTMS · Team">
       <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
@@ -998,21 +1166,22 @@ export function TeamMock() {
       <div className="grid grid-cols-[1.6fr_1fr_0.8fr] gap-3 border-b border-border bg-muted/40 px-4 py-2 text-[10px] uppercase tracking-wide text-faint">
         <span>Name</span><span>Role</span><span className="text-right">Status</span>
       </div>
-      <div className="divide-y divide-border">
-        {people.map(([initials, name, role, st]) => (
-          <div key={name} className="grid grid-cols-[1.6fr_1fr_0.8fr] items-center gap-3 px-4 py-2.5 text-[13px]">
-            <div className="flex min-w-0 items-center gap-2.5">
+      <Stagger ref={ref} className="divide-y divide-border" gap={0.07}>
+        {people.map(([initials, name, role, st], i) => (
+          <Item key={name} variants={RISE} className="relative grid grid-cols-[1.6fr_1fr_0.8fr] items-center gap-3 px-4 py-2.5 text-[13px]">
+            <span aria-hidden className={`pointer-events-none absolute inset-0 bg-muted/60 transition-opacity duration-500 ${i === hi ? "opacity-100" : "opacity-0"}`} />
+            <div className="relative flex min-w-0 items-center gap-2.5">
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] font-semibold text-faint">{initials}</span>
               <span className="truncate font-medium text-ink">{name}</span>
             </div>
-            <span className="text-faint">{role}</span>
-            <span className="flex items-center justify-end gap-1.5">
+            <span className="relative text-faint">{role}</span>
+            <span className="relative flex items-center justify-end gap-1.5">
               <span className={`h-1.5 w-1.5 rounded-full ${st === "active" ? "bg-emerald-500" : "bg-amber-400"}`} />
               <span className="text-[12px] text-faint">{st === "active" ? "Active" : "Invited"}</span>
             </span>
-          </div>
+          </Item>
         ))}
-      </div>
+      </Stagger>
     </Frame>
   );
 }
@@ -1031,6 +1200,13 @@ export function ReportsMock() {
       ["Olivia Wilson", "5", "346", "2.20", "$5,400"],
     ] },
   ];
+  const [ref, inView] = useInViewLoop();
+  const [open, setOpen] = useState(true);
+  useEffect(() => {
+    if (!inView) return;
+    const id = setInterval(() => setOpen((o) => !o), 2800);
+    return () => clearInterval(id);
+  }, [inView]);
   return (
     <Frame title="hunterTMS · Reports">
       <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
@@ -1043,27 +1219,39 @@ export function ReportsMock() {
       <div className={`${cols} gap-3 border-b border-border bg-muted/40 px-4 py-2 text-[10px] uppercase tracking-wide text-faint`}>
         <span>Dispatcher</span><span className="text-right">Loads</span><span className="text-right">Miles</span><span className="text-right">$/mi</span><span className="text-right">Gross</span>
       </div>
-      <div className="divide-y divide-border text-[13px]">
-        {groups.map((g) => (
-          <div key={g.name}>
-            <div className={`${cols} items-center gap-3 bg-white px-4 py-2.5 font-medium`}>
-              <span className="flex items-center gap-1.5 text-ink"><ChevronDown className="h-3.5 w-3.5 text-faint" />{g.name}</span>
-              <span className="text-right text-ink">{g.loads}</span>
-              <span className="text-right text-body">{g.miles}</span>
-              <span className="text-right text-body">{g.rpm}</span>
-              <span className="text-right text-ink">{g.gross}</span>
-            </div>
-            {g.drivers.map((d) => (
-              <div key={d[0]} className={`${cols} items-center gap-3 bg-muted/20 px-4 py-2 text-faint`}>
-                <span className="truncate pl-5 text-body">{d[0]}</span>
-                <span className="text-right">{d[1]}</span>
-                <span className="text-right">{d[2]}</span>
-                <span className="text-right">{d[3]}</span>
-                <span className="text-right text-ink">{d[4]}</span>
+      <div ref={ref} className="divide-y divide-border text-[13px]">
+        {groups.map((g, gi) => {
+          const expanded = gi !== 0 || open;
+          return (
+            <div key={g.name}>
+              <div className={`${cols} items-center gap-3 bg-white px-4 py-2.5 font-medium`}>
+                <span className="flex items-center gap-1.5 text-ink">
+                  <motion.span animate={{ rotate: expanded ? 0 : -90 }} transition={{ duration: 0.3, ease: EASE }} className="inline-flex"><ChevronDown className="h-3.5 w-3.5 text-faint" /></motion.span>
+                  {g.name}
+                </span>
+                <span className="text-right text-ink">{g.loads}</span>
+                <span className="text-right text-body">{g.miles}</span>
+                <span className="text-right text-body">{g.rpm}</span>
+                <span className="text-right text-ink">{g.gross}</span>
               </div>
-            ))}
-          </div>
-        ))}
+              <AnimatePresence initial={false}>
+                {expanded ? (
+                  <motion.div key="rows" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.35, ease: EASE }} className="overflow-hidden">
+                    {g.drivers.map((d) => (
+                      <div key={d[0]} className={`${cols} items-center gap-3 bg-muted/20 px-4 py-2 text-faint`}>
+                        <span className="truncate pl-5 text-body">{d[0]}</span>
+                        <span className="text-right">{d[1]}</span>
+                        <span className="text-right">{d[2]}</span>
+                        <span className="text-right">{d[3]}</span>
+                        <span className="text-right text-ink">{d[4]}</span>
+                      </div>
+                    ))}
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
+            </div>
+          );
+        })}
       </div>
     </Frame>
   );
@@ -1071,22 +1259,26 @@ export function ReportsMock() {
 
 /* 10 · Dashboard — business overview: KPIs, trend, top dispatchers & carriers. */
 export function DashboardSummaryMock() {
-  const kpis = [["Total gross", "$1,545,231", "20.1%"], ["Monthly revenue", "$35,231", "20.1%"], ["Loads completed", "1,122", "8.4%"]];
+  const kpis = [
+    { label: "Total gross", v: 1545231, p: "$", delta: "20.1%" },
+    { label: "Monthly revenue", v: 35231, p: "$", delta: "20.1%" },
+    { label: "Loads completed", v: 1122, delta: "8.4%" },
+  ];
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
   const dispatchers = [["Michael Johnson", "456", "$200,000"], ["Sarah Williams", "378", "$183,000"], ["Christopher Brown", "345", "$150,000"], ["Emily Davis", "321", "$80,000"]];
   const carriers = [["XPO Logistics", "456", "$204,000"], ["Cardinal Logistics", "378", "$182,000"], ["Landstar", "345", "$151,000"], ["Estes Express", "321", "$88,000"]];
   return (
     <Frame title="hunterTMS · Dashboard">
       <div className="space-y-4 p-4">
-        <div className="grid grid-cols-3 gap-3">
-          {kpis.map(([label, value, delta]) => (
-            <div key={label} className="rounded-xl border border-border bg-white p-4">
+        <Stagger className="grid grid-cols-3 gap-3">
+          {kpis.map(({ label, v, p, delta }) => (
+            <Item key={label} variants={RISE} className="rounded-xl border border-border bg-white p-4">
               <p className="truncate text-xs font-medium text-faint">{label}</p>
-              <p className="mt-2 truncate text-xl font-semibold tracking-tight text-ink md:text-2xl">{value}</p>
+              <CountUp value={v} prefix={p} className="mt-2 block truncate text-xl font-semibold tracking-tight text-ink md:text-2xl" />
               <div className="mt-1"><Delta value={delta} /></div>
-            </div>
+            </Item>
           ))}
-        </div>
+        </Stagger>
         <div className="grid gap-3 lg:grid-cols-2">
           <div className="rounded-xl border border-border bg-white p-4">
             <div className="flex items-center justify-between">
