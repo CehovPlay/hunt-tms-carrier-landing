@@ -641,17 +641,17 @@ export function TimelineMock() {
             <div className="relative h-[72px]">
               <div className="absolute inset-0 grid grid-cols-7">{Array.from({ length: 7 }).map((_, k) => <div key={k} className={`${k ? "border-l border-border/70" : ""} ${k >= 5 ? "bg-muted/40" : ""}`} />)}</div>
               {lane.bars.map((b, k) => {
-                const delay = (i++ * 0.12).toFixed(2);
+                const delay = i++ * 0.1;
                 const color = TONE[b.tone];
                 return (
-                  <div key={k} className="bar-grow absolute flex flex-col" style={{ left: `${b.l}%`, width: `${b.w}%`, top: 10, animationDelay: `${delay}s` }}>
+                  <motion.div key={k} className="absolute flex flex-col" style={{ left: `${b.l}%`, width: `${b.w}%`, top: 10, transformOrigin: "left center" }} initial={{ scaleX: 0, opacity: 0 }} whileInView={{ scaleX: 1, opacity: 1 }} viewport={VIEW} transition={{ duration: 0.55, delay, ease: EASE }}>
                     <span className="w-fit rounded-t-[5px] px-1.5 py-0.5 text-[9px] font-medium leading-none text-white" style={{ backgroundColor: color }}>{b.id}</span>
                     <div className="relative overflow-hidden rounded-[5px] rounded-tl-none bg-muted py-1 pl-2 pr-1" style={{ height: 36 }}>
                       <span className="absolute left-0 top-0 h-full w-[3px]" style={{ backgroundColor: color }} />
                       <p className="truncate text-[10px] font-medium text-ink">{b.route}</p>
                       <p className="truncate text-[10px] text-faint">{b.rate}</p>
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>
@@ -871,9 +871,9 @@ export function DispatchTimelineMock() {
               <div className="absolute inset-0 grid grid-cols-5">{Array.from({ length: 5 }).map((_, i) => <div key={i} className={`${i ? "border-l border-border/70" : ""} ${i >= 4 ? "bg-muted/40" : ""}`} />)}</div>
               {lane.bars.map((b, i) => {
                 const color = TONE[b.tone];
-                const delay = (k++ * 0.1).toFixed(2);
+                const delay = k++ * 0.1;
                 return (
-                  <div key={i} className="bar-grow absolute" style={{ left: `${b.l}%`, width: `${b.w}%`, top: 12, animationDelay: `${delay}s` }}>
+                  <motion.div key={i} className="absolute" style={{ left: `${b.l}%`, width: `${b.w}%`, top: 12, transformOrigin: "left center" }} initial={{ scaleX: 0, opacity: 0 }} whileInView={{ scaleX: 1, opacity: 1 }} viewport={VIEW} transition={{ duration: 0.55, delay, ease: EASE }}>
                     <div className={`flex items-center gap-1 rounded-t-[6px] px-1.5 py-0.5 text-[9px] font-semibold leading-none text-white ${b.warn ? "warn-pulse" : ""}`} style={{ backgroundColor: color }}>
                       <span className="truncate">{b.id}</span>
                       <MapPin className="ml-auto h-2.5 w-2.5 shrink-0 text-white/90" />
@@ -883,7 +883,7 @@ export function DispatchTimelineMock() {
                       <p className="truncate text-[11px] font-medium text-ink">{b.route}</p>
                       <p className="truncate text-[10px] text-faint">{b.rate} · {b.mi} · {b.rpm}</p>
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>

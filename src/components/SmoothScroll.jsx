@@ -20,6 +20,7 @@ export default function SmoothScroll() {
       smoothWheel: true,
     });
     lenisRef.current = lenis;
+    window.__lenis = lenis; // shared with the scroll-to-top button
 
     let raf;
     const loop = (time) => {
@@ -32,6 +33,7 @@ export default function SmoothScroll() {
       cancelAnimationFrame(raf);
       lenis.destroy();
       lenisRef.current = null;
+      if (window.__lenis === lenis) window.__lenis = null;
     };
   }, []);
 

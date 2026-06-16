@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import Header from "@/components/Header";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -28,6 +29,7 @@ export default function RootLayout({ children }) {
         <SmoothScroll />
         <Header />
         {children}
+        <ScrollToTop />
       </body>
     </html>
   );
