@@ -77,12 +77,38 @@ body {
 @keyframes barGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 .bar-grow { transform-origin: left center; animation: barGrow 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 
+/* Scales — diagonal hatch filling the empty gutters beside the frame */
+.scales {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(23, 23, 23, 0.05),
+    rgba(23, 23, 23, 0.05) 1px,
+    transparent 1px,
+    transparent 9px
+  );
+}
+
 /* Step progress bar (How-it-works active step) */
 @keyframes progressGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 .step-progress { transform-origin: left center; animation: progressGrow linear forwards; }
+
+/* AI RC Scanner — blue beam sweeping down the rate-con document.
+   Animates `top` (relative to the card) so it spans the full height. */
+@keyframes scanBeam {
+  0% { top: -16%; opacity: 0; }
+  12% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { top: 104%; opacity: 0; }
+}
+.scan-beam {
+  top: -16%;
+  background: linear-gradient(to bottom, transparent, rgba(59, 130, 246, 0.16) 42%, rgba(59, 130, 246, 0.55) 50%, rgba(59, 130, 246, 0.16) 58%, transparent);
+  animation: scanBeam 2.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .rise, .bar-grow { animation: none; }
   .route-flow { animation: none; }
   .step-progress { animation: none; transform: scaleX(1); }
+  .scan-beam { animation: none; opacity: 0.35; }
 }

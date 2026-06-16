@@ -1,79 +1,74 @@
-import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import Features from "@/components/Features";
-import Showcase from "@/components/Showcase";
-import Testimonial from "@/components/Testimonial";
 import Faq from "@/components/Faq";
+import Testimonial from "@/components/Testimonial";
 import CtaBand from "@/components/CtaBand";
 import Footer from "@/components/Footer";
 import { FrameColumn, FrameRule } from "@/components/Frame";
-import { LoadsMock, BillingMock, MapMock, TimelineMock, ExpenseMock, PayrollMock, ComplianceMock, HuntBotMock, DashboardMock } from "@/components/mockups";
+import { DispatcherDashboardMock, DispatchTimelineMock, ViewTotalsMock, DispatchMapMock, LoadInfoMock, LoadHistoryMock, StatusViewMock, RcScannerMock, TeamMock, ReportsMock, DashboardSummaryMock } from "@/components/mockups";
 
 export const metadata = {
-  title: "hunterTMS for Dispatchers — Book better loads, faster",
+  title: "huntTMS for Dispatchers — Revolutionize your dispatching",
   description:
-    "The dispatcher-first TMS by LoadHunter. Filter DAT and Truckstop in seconds, vet brokers, reach out in one click, and run your whole dispatch board with AI.",
+    "The dispatcher-first TMS by LoadHunter. Designed exclusively for dispatchers and dispatch services — simplify load management, boost efficiency, and drive profitability.",
 };
 
 const BLOCKS = [
-  { tag: "Smart load board", title: "Find the right load in seconds", text: "Filter DAT and Truckstop by rate, lane, equipment and pickup window — the loads worth booking surface first.", bullets: ["DAT / Truckstop filtering", "Rate-per-mile sorting", "Saved searches"], mock: <LoadsMock /> },
-  { tag: "AI Rate Con parsing", title: "Drop the Rate Con — AI fills the load", text: "No retyping. AI reads the Rate Confirmation, creates the load, and flags weight or address mismatches before they bite.", bullets: ["Auto-extract load details", "BOL vs Rate Con checks", "Seconds, not minutes"], mock: <BillingMock /> },
-  { tag: "Broker outreach", title: "Reach out in one click", text: "Vet brokers on reviews and credit, then send a templated message or call — without leaving the load.", bullets: ["Broker reviews & credit", "One-click templated outreach", "History on every broker"], mock: <HuntBotMock /> },
-  { tag: "Live map & tracking", title: "See every driver on a real map", text: "Real road routing from pickup to delivery and live driver positions, so you always know where freight is.", bullets: ["Real-road routing", "Live positions", "ETA at a glance"], mock: <MapMock /> },
-  { tag: "Dispatch timeline", title: "A week of your board, at a glance", text: "Every truck and appointment on one board so you spot conflicts and idle trucks before they cost a load.", bullets: ["Week-at-a-glance board", "Spot idle trucks", "Catch conflicts"], mock: <TimelineMock /> },
-  { tag: "Settlements", title: "Dispatcher pay that runs itself", text: "Commission, flat or percentage — generate dispatcher settlements with every booked load counted automatically.", bullets: ["Commission & flat", "Booked-load tracking", "Blockers surfaced"], mock: <PayrollMock /> },
-  { tag: "Expenses", title: "Keep every load profitable", text: "Track fuel, tolls and lumpers against each load so you always know the real margin on a lane.", bullets: ["Assigned to loads", "Receipts on file", "Live margin"], mock: <ExpenseMock /> },
-  { tag: "HuntBot AI", title: "Ask in plain English — it acts for you", text: "“Show the best reefer loads out of Dallas.” HuntBot filters the board, drafts outreach and runs the workflow for you.", bullets: ["Natural-language search", "Drafts outreach", "Runs workflows"], mock: <ComplianceMock /> },
+  { title: "Timeline — your central monitoring hub", text: "Your dispatch command center — schedule loads, see driver availability, and resolve conflicts in seconds with a clean timeline view.", bullets: ["A week of every truck at a glance", "Catch conflicts and idle trucks instantly", "Color-coded load status across the board"], mock: <DispatchTimelineMock /> },
+  { title: "View totals", text: "Switch between the numbers that matter most — revenue, miles, and rate-per-mile — without leaving the timeline.", bullets: ["Totals by time range (day / week / month)", "Quick profitability checks (RPM trends)", "Fast comparisons across loads and periods"], mock: <ViewTotalsMock /> },
+  { title: "Map view", text: "See where the driver is, what route they're taking, and adjust stops in real time to protect margin and prevent delays.", bullets: ["Fewer surprises and missed windows", "Faster replanning when things change", "Better geographic decision-making"], mock: <DispatchMapMock /> },
+  { title: "Full load info", text: "Consolidate all load details into one comprehensive source of truth. No more sifting through countless emails, chat messages, or spreadsheets to find the information you need.", bullets: ["Full address details", "Driver window / appointment times", "Payment / expenses", "Broker details, D/H miles", "Files & documents", "Notes"], mock: <LoadInfoMock /> },
+  { title: "Full load history", text: "Get a complete, time-stamped timeline of everything that happened to a load — who changed what, when, and why.", bullets: ["Create / modify / cancel events", "Delivery confirmations and key milestones", "Accountability across the team"], mock: <LoadHistoryMock /> },
+  { title: "Status view", text: "Standardize load stages and exceptions so everyone understands the exact state of every load at a glance.", bullets: ["Reduces miscommunication", "Speeds up handoffs between dispatchers", "Helps prioritize what needs attention now"], mock: <StatusViewMock /> },
+  { title: "AI RC Scanner", text: "Drag & drop a Rate Confirmation — AI extracts the data and auto-fills your load fields in seconds.", bullets: ["Eliminates manual data entry", "Reduces costly typos and missing fields", "Speeds up load creation and dispatch start time"], mock: <RcScannerMock /> },
+  { title: "Team management", text: "Invite dispatchers and supervisors, assign clear roles, and collaborate on the same workload without chaos.", bullets: ["Dispatcher / Supervisor roles", "Simple invites and onboarding", "Shared visibility into loads and updates"], mock: <TeamMock /> },
+  { title: "Reports", text: "Generate customized reports for operations, performance, and finance.", bullets: ["Loads reports, dispatcher and team performance", "Financial summaries (profitability, RPM, costs)", "Export options (CSV / PDF)"], mock: <ReportsMock /> },
+  { title: "Dashboard — business overview at a glance", text: "A high-level command center for performance, profitability, and team output — updated from your real operational data.", bullets: ["Business estimates and financial summaries", "Most profitable dispatchers ranking", "Top brokers and carriers", "General statistics snapshot"], mock: <DashboardSummaryMock /> },
 ];
 
 const QUOTES = [
-  { quote: "I used to live in five tabs. Now I filter DAT, check the broker, and send outreach from one screen — I book more loads before lunch than I used to all day.", name: "Sergio M.", role: "Dispatcher · 14 trucks", initials: "SM" },
-  { quote: "AI Rate Con parsing is the killer feature. Paste the PDF, the load's built, the mismatch is flagged. My error rate basically went to zero.", name: "Lena R.", role: "Dispatch lead · 30 trucks", initials: "LR" },
-  { quote: "Broker reviews and credit right on the load saved us from two shaky brokers this month alone. That's real money kept.", name: "Tariq H.", role: "Independent dispatcher", initials: "TH" },
+  { quote: "I used to live in five tabs. Now I schedule on the timeline, scan the Rate Con, and dispatch from one screen — I book more loads before lunch than I used to all day.", name: "Sergio M.", role: "Dispatcher · 14 trucks", initials: "SM" },
+  { quote: "AI RC parsing is the killer feature. Drop the PDF, the load's built, the mismatch is flagged. My error rate basically went to zero.", name: "Lena R.", role: "Dispatch lead · 30 trucks", initials: "LR" },
+  { quote: "Reports and the business dashboard finally show me who my most profitable dispatchers are. We grew margin without adding headcount.", name: "Tariq H.", role: "Dispatch service owner", initials: "TH" },
 ];
 
 const QA = [
-  { q: "Which load boards do you work with?", a: "hunterTMS layers smart filtering and automation on top of DAT and Truckstop-based workflows so you can find and book the right loads faster." },
-  { q: "Do you parse Rate Confirmations automatically?", a: "Yes. Drop a Rate Con (PDF or photo) and AI extracts the load, stops, rate and references — then flags mismatches against the BOL." },
-  { q: "Can I see broker reviews and credit?", a: "Broker reviews and credit show right on the load, with full outreach history, so you can vet before you commit a truck." },
-  { q: "How is this different from the carrier product?", a: "The carrier product runs the back office — billing, payroll, compliance. hunterTMS for Dispatchers is built around the board: filtering, vetting and one-click outreach." },
-  { q: "How long does setup take?", a: "Minutes. Connect your workflow and you're filtering and booking the same day." },
+  { q: "Do I need to sign a long-term contract?", a: "No. huntTMS works on a flexible month-to-month basis — you stay because it delivers results, not because you're locked in." },
+  { q: "How does the pricing model benefit me?", a: "You only pay for active operations. Scale your team, drivers, and workflows without overpaying for unused capacity — cost grows with your business." },
+  { q: "Do you offer any trial period?", a: "Yes. You can test huntTMS in a real workflow — import loads, run dispatch, and see the full system before committing." },
+  { q: "Is training included in the subscription price?", a: "Yes. You get onboarding, product guidance, and continuous support so your team can start moving loads without friction." },
+  { q: "What does the monthly fee for huntTMS cover?", a: "Everything needed to run dispatch in one flow: load creation, AI-assisted dispatch, document parsing, invoicing, and workflow automation — no extra tools required." },
 ];
 
 export default function DispatchersPage() {
   return (
     <>
-      <Header audience="dispatchers" />
       <main>
         <FrameColumn>
           <FrameRule />
           <Hero
-            eyebrow="Dispatcher-first TMS · by LoadHunter"
-            titleLead="Book better loads,"
-            titleAccent="faster."
-            subtitle="Filter DAT and Truckstop in seconds, vet brokers, reach out in one click, and run your whole dispatch board with AI. Built for dispatchers and dispatch teams."
-            mock={<DashboardMock />}
+            titleLead="Revolutionize your dispatching with"
+            titleAccent="our TMS platform"
+            subtitle="Designed exclusively for dispatchers and dispatch services, our TMS simplifies load management, boosts efficiency, and drives profitability. Monitor, automate, and collaborate like never before."
+            ctaPrimary="Try it free"
+            ctaSecondary="Get a demo"
+            trust="Full access · No credit card required"
+            mock={<DispatcherDashboardMock />}
           />
           <FrameRule />
           <Features
-            eyebrow="Built for dispatchers"
-            heading={<>Everything to dispatch<br />smarter</>}
-            sub="From the load board to the invoice — filtering, broker vetting, outreach and automation in one workspace."
+            heading={<>Everything you need to<br />dispatch smarter</>}
+            sub="Discover how our platform empowers dispatchers with intuitive tools for seamless operations."
             blocks={BLOCKS}
           />
           <FrameRule />
-          <Showcase
-            heading="From load board to booked — in fewer clicks"
-            sub="Three steps. HuntBot handles the busywork."
-          />
+          <Faq heading="Get answers to your most common questions" qa={QA} />
           <FrameRule />
-          <Testimonial eyebrow="Why dispatchers switch" quotes={QUOTES} />
-          <FrameRule />
-          <Faq heading="Dispatcher questions, answered" qa={QA} />
+          <Testimonial quotes={QUOTES} />
           <FrameRule />
           <CtaBand
-            heading="Run your dispatch desk on autopilot"
-            sub="Start free in minutes. Filter your first board and book a better load today."
+            heading="Ready to transform your dispatching?"
+            sub="Join hundreds of dispatchers who are saving hours every week, reducing errors, and growing their business with our AI-powered TMS platform."
             placeholder="you@yourdispatch.com"
           />
           <FrameRule />

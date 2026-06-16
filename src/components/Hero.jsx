@@ -7,6 +7,9 @@ export default function Hero({
   titleLead = "Run your entire fleet from",
   titleAccent = "one platform.",
   subtitle = "Dispatch, loads, invoicing, factoring, expenses, payroll, driver compliance and a live map — automated by AI and synced in real time. Built for carriers, not middlemen.",
+  ctaPrimary = "Start free",
+  ctaSecondary = "Book a demo",
+  trust = "No credit card · Set up in minutes · Cancel anytime",
   mock,
 } = {}) {
   return (
@@ -26,12 +29,12 @@ export default function Hero({
           </Reveal>
           <Reveal delay={0.2}>
             <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button href="#cta" size="lg">Start free <ArrowRight className="h-4 w-4" /></Button>
-              <Button href="#demo" variant="secondary" size="lg">Book a demo</Button>
+              <Button href="#cta" size="lg">{ctaPrimary} <ArrowRight className="h-4 w-4" /></Button>
+              <Button href="#demo" variant="secondary" size="lg">{ctaSecondary}</Button>
             </div>
           </Reveal>
           <Reveal delay={0.3}>
-            <p className="mt-5 text-sm text-faint">No credit card · Set up in minutes · Cancel anytime</p>
+            <p className="mt-5 text-sm text-faint">{trust}</p>
           </Reveal>
         </div>
 

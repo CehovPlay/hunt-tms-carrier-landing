@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Wordmark, Button, Container, Bay } from "./ui";
 
 // Signature Aceternity navbar shadow (only shown once scrolled).
@@ -12,7 +13,9 @@ const NAV_SHADOW =
 const link = "text-sm font-medium transition-colors";
 const spring = { type: "spring", stiffness: 200, damping: 30 };
 
-export default function Header({ audience = "carriers" }) {
+export default function Header() {
+  const pathname = usePathname();
+  const audience = pathname?.startsWith("/dispatchers") ? "dispatchers" : "carriers";
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pillRef = useRef(null);
@@ -78,8 +81,6 @@ export default function Header({ audience = "carriers" }) {
               <nav className="hidden items-center gap-6 lg:flex">
                 <Link href="/" className={audienceLink(audience === "carriers")}>Carriers</Link>
                 <Link href="/dispatchers" className={audienceLink(audience === "dispatchers")}>Dispatchers</Link>
-                <a className={`${link} text-body hover:text-ink`} href="#features">Features</a>
-                <a className={`${link} text-body hover:text-ink`} href="#how">How it works</a>
                 <a className={`${link} text-body hover:text-ink`} href="#cta">Contact</a>
               </nav>
             )}
@@ -98,8 +99,6 @@ export default function Header({ audience = "carriers" }) {
             <div className="mt-2 rounded-2xl border border-border bg-white p-2 shadow-xl lg:hidden">
               <Link href="/" onClick={() => setOpen(false)} className={`block rounded-lg px-3 py-3 text-base font-medium hover:bg-muted ${audience === "carriers" ? "text-ink" : "text-body"}`}>Carriers</Link>
               <Link href="/dispatchers" onClick={() => setOpen(false)} className={`block rounded-lg px-3 py-3 text-base font-medium hover:bg-muted ${audience === "dispatchers" ? "text-ink" : "text-body"}`}>Dispatchers</Link>
-              <a href="#features" onClick={() => setOpen(false)} className="block rounded-lg px-3 py-3 text-base font-medium text-body hover:bg-muted">Features</a>
-              <a href="#how" onClick={() => setOpen(false)} className="block rounded-lg px-3 py-3 text-base font-medium text-body hover:bg-muted">How it works</a>
               <a href="#cta" onClick={() => setOpen(false)} className="block rounded-lg px-3 py-3 text-base font-medium text-body hover:bg-muted">Contact</a>
               <div className="mt-2 flex flex-col gap-2 p-1">
                 <Button href="#cta" variant="secondary" size="sm" className="w-full" onClick={() => setOpen(false)}>Sign in</Button>

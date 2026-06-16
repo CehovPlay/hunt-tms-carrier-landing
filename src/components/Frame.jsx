@@ -18,7 +18,12 @@ function Square({ className = "" }) {
 export function FrameColumn({ children, className = "" }) {
   return (
     <Container className={className}>
-      <div className="relative border-x border-border">{children}</div>
+      <div className="relative border-x border-border">
+        {/* Diagonal "scales" filling the empty gutters either side of the frame */}
+        <div className="scales pointer-events-none absolute inset-y-0 right-full w-screen" aria-hidden="true" />
+        <div className="scales pointer-events-none absolute inset-y-0 left-full w-screen" aria-hidden="true" />
+        {children}
+      </div>
     </Container>
   );
 }

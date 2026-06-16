@@ -1,30 +1,39 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FileScan, Navigation, BadgeDollarSign } from "lucide-react";
+import { FileScan, Navigation, BadgeDollarSign, MapPin } from "lucide-react";
 import { Bay } from "./ui";
 import { Reveal } from "./Reveal";
-import { LoadsMock, MapMock, BillingMock } from "./mockups";
+import { LoadsMock, MapMock, BillingMock, TimelineMock } from "./mockups";
 
-// Our 3-step explainer — each step shows the matching real platform screen.
-const STEPS = [
-  { icon: FileScan, title: "Import your loads", text: "Connect a broker email or drop a Rate Confirmation — AI parses it and creates the load with driver, truck and stops.", mock: <LoadsMock /> },
-  { icon: Navigation, title: "Dispatch & track", text: "Assign a driver, watch them on the live map, and let the timeline board keep every appointment in view.", mock: <MapMock /> },
-  { icon: BadgeDollarSign, title: "Bill, pay, repeat", text: "Collect the POD, send the invoice, capture expenses and run payroll — margins and receivables update themselves.", mock: <BillingMock /> },
-];
+// 3-step explainer — each step shows the matching real platform screen.
+const VARIANTS = {
+  carrier: [
+    { icon: FileScan, title: "Import your loads", text: "Connect a broker email or drop a Rate Confirmation — AI parses it and creates the load with driver, truck and stops.", mock: <LoadsMock /> },
+    { icon: Navigation, title: "Dispatch & track", text: "Assign a driver, watch them on the live map, and let the timeline board keep every appointment in view.", mock: <MapMock /> },
+    { icon: BadgeDollarSign, title: "Bill, pay, repeat", text: "Collect the POD, send the invoice, capture expenses and run payroll — margins and receivables update themselves.", mock: <BillingMock /> },
+  ],
+  dispatcher: [
+    { icon: FileScan, title: "Scan the Rate Con", text: "Drag & drop a Rate Confirmation — AI extracts the data and auto-fills your load fields in seconds.", mock: <LoadsMock /> },
+    { icon: Navigation, title: "Schedule on the Timeline", text: "Schedule loads, see driver availability, and resolve conflicts in seconds with a clean timeline view.", mock: <TimelineMock /> },
+    { icon: MapPin, title: "Track & report", text: "Watch every load on the live map and generate operations, performance and finance reports in a click.", mock: <MapMock /> },
+  ],
+};
 const DURATION = 5000;
 
 export default function Showcase({
+  variant = "carrier",
   eyebrow = "How it works",
   heading = "From rate con to paid — without the busywork",
   sub = "Three steps. The platform handles the rest.",
 } = {}) {
+  const STEPS = VARIANTS[variant] || VARIANTS.carrier;
   const [active, setActive] = useState(0);
 
   useEffect(() => {
     const id = setTimeout(() => setActive((a) => (a + 1) % STEPS.length), DURATION);
     return () => clearTimeout(id);
-  }, [active]);
+  }, [active, STEPS.length]);
 
   return (
     <section id="how" className="bg-surface py-24 md:py-28">

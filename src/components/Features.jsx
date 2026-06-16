@@ -34,13 +34,13 @@ export default function Features({
           {/* Stacked feature blocks */}
           <div className="flex flex-col gap-32 md:gap-44">
             {blocks.map((b) => (
-              <div key={b.tag}>
+              <div key={b.title}>
                 <Reveal>
-                  <div className="overflow-x-auto rounded-2xl border border-border bg-muted/50 p-4 md:p-6">{b.mock}</div>
+                  {b.bare ? b.mock : <div className="overflow-x-auto rounded-2xl border border-border bg-muted/50 p-4 md:p-6">{b.mock}</div>}
                 </Reveal>
                 <Reveal delay={0.12}>
-                  <p className="mt-10 text-xs font-medium uppercase tracking-[0.12em] text-faint md:mt-12">{b.tag}</p>
-                  <h3 className="mt-3 font-display text-2xl font-semibold tracking-tight text-ink md:text-[30px] md:leading-[1.15]">{b.title}</h3>
+                  {b.tag ? <p className="mt-10 text-xs font-medium uppercase tracking-[0.12em] text-faint md:mt-12">{b.tag}</p> : null}
+                  <h3 className={`font-display text-2xl font-semibold tracking-tight text-ink md:text-[30px] md:leading-[1.15] ${b.tag ? "mt-3" : "mt-10 md:mt-12"}`}>{b.title}</h3>
                   <p className="mt-3 text-base leading-relaxed text-body">{b.text}</p>
                   <ul className="mt-5 space-y-2.5">
                     {b.bullets.map((bl) => (
