@@ -6,8 +6,8 @@ import Testimonial from "@/components/Testimonial";
 import Faq from "@/components/Faq";
 import CtaBand from "@/components/CtaBand";
 import Footer from "@/components/Footer";
-import { LoadsMock, BillingMock, MapMock, TimelineMock, ExpenseMock, PayrollMock, ComplianceMock, HuntBotMock } from "@/components/mockups";
-import { Search, PhoneCall, Truck } from "lucide-react";
+import { FrameColumn, FrameRule } from "@/components/Frame";
+import { LoadsMock, BillingMock, MapMock, TimelineMock, ExpenseMock, PayrollMock, ComplianceMock, HuntBotMock, DashboardMock } from "@/components/mockups";
 
 export const metadata = {
   title: "hunterTMS for Dispatchers — Book better loads, faster",
@@ -24,12 +24,6 @@ const BLOCKS = [
   { tag: "Settlements", title: "Dispatcher pay that runs itself", text: "Commission, flat or percentage — generate dispatcher settlements with every booked load counted automatically.", bullets: ["Commission & flat", "Booked-load tracking", "Blockers surfaced"], mock: <PayrollMock /> },
   { tag: "Expenses", title: "Keep every load profitable", text: "Track fuel, tolls and lumpers against each load so you always know the real margin on a lane.", bullets: ["Assigned to loads", "Receipts on file", "Live margin"], mock: <ExpenseMock /> },
   { tag: "HuntBot AI", title: "Ask in plain English — it acts for you", text: "“Show the best reefer loads out of Dallas.” HuntBot filters the board, drafts outreach and runs the workflow for you.", bullets: ["Natural-language search", "Drafts outreach", "Runs workflows"], mock: <ComplianceMock /> },
-];
-
-const STEPS = [
-  { n: "01", icon: Search, title: "Find the load", text: "Filter DAT and Truckstop by rate, lane and equipment. The loads worth booking rise to the top." },
-  { n: "02", icon: PhoneCall, title: "Vet & reach out", text: "Check broker reviews and credit, then send a one-click templated message or place the call." },
-  { n: "03", icon: Truck, title: "Book & dispatch", text: "Drop the Rate Con, let AI build the load, assign the driver and track it to delivery." },
 ];
 
 const QUOTES = [
@@ -50,32 +44,40 @@ export default function DispatchersPage() {
   return (
     <>
       <Header audience="dispatchers" />
-      <main className="pt-[56px]">
-        <Hero
-          eyebrow="Dispatcher-first TMS · by LoadHunter"
-          titleLead="Book better loads,"
-          titleAccent="faster."
-          subtitle="Filter DAT and Truckstop in seconds, vet brokers, reach out in one click, and run your whole dispatch board with AI. Built for dispatchers and dispatch teams."
-          mock={<LoadsMock />}
-        />
-        <Features
-          eyebrow="Built for dispatchers"
-          heading={<>Everything to dispatch<br />smarter</>}
-          sub="From the load board to the invoice — filtering, broker vetting, outreach and automation in one workspace."
-          blocks={BLOCKS}
-        />
-        <Showcase
-          heading="From load board to booked — in fewer clicks"
-          sub="Three steps. HuntBot handles the busywork."
-          steps={STEPS}
-        />
-        <Testimonial eyebrow="Why dispatchers switch" quotes={QUOTES} />
-        <Faq heading="Dispatcher questions, answered" qa={QA} />
-        <CtaBand
-          heading="Run your dispatch desk on autopilot"
-          sub="Start free in minutes. Filter your first board and book a better load today."
-          placeholder="you@yourdispatch.com"
-        />
+      <main>
+        <FrameColumn>
+          <FrameRule />
+          <Hero
+            eyebrow="Dispatcher-first TMS · by LoadHunter"
+            titleLead="Book better loads,"
+            titleAccent="faster."
+            subtitle="Filter DAT and Truckstop in seconds, vet brokers, reach out in one click, and run your whole dispatch board with AI. Built for dispatchers and dispatch teams."
+            mock={<DashboardMock />}
+          />
+          <FrameRule />
+          <Features
+            eyebrow="Built for dispatchers"
+            heading={<>Everything to dispatch<br />smarter</>}
+            sub="From the load board to the invoice — filtering, broker vetting, outreach and automation in one workspace."
+            blocks={BLOCKS}
+          />
+          <FrameRule />
+          <Showcase
+            heading="From load board to booked — in fewer clicks"
+            sub="Three steps. HuntBot handles the busywork."
+          />
+          <FrameRule />
+          <Testimonial eyebrow="Why dispatchers switch" quotes={QUOTES} />
+          <FrameRule />
+          <Faq heading="Dispatcher questions, answered" qa={QA} />
+          <FrameRule />
+          <CtaBand
+            heading="Run your dispatch desk on autopilot"
+            sub="Start free in minutes. Filter your first board and book a better load today."
+            placeholder="you@yourdispatch.com"
+          />
+          <FrameRule />
+        </FrameColumn>
       </main>
       <Footer />
     </>

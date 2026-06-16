@@ -1,5 +1,6 @@
 import { Check } from "lucide-react";
-import { Container, Eyebrow } from "./ui";
+import { Bay } from "./ui";
+import { Reveal } from "./Reveal";
 import { LoadsMock, BillingMock, MapMock, TimelineMock, ExpenseMock, PayrollMock, ComplianceMock, HuntBotMock } from "./mockups";
 
 const BLOCKS = [
@@ -14,45 +15,47 @@ const BLOCKS = [
 ];
 
 export default function Features({
-  eyebrow = "Everything, in one place",
   heading,
   sub = "Stop stitching together five tools. hunterTMS connects dispatch, billing, expenses, payroll and compliance so the data syncs itself.",
   blocks = BLOCKS,
 } = {}) {
   return (
-    <section id="features" className="border-t border-border py-24 md:py-32">
-      <Container>
+    <section id="features" className="py-24 md:py-32">
+      <Bay>
         <div className="grid gap-14 md:grid-cols-[0.85fr_1.15fr] md:gap-24 lg:gap-32 xl:gap-40">
           {/* Sticky section title */}
-          <div className="md:sticky md:top-[96px] md:self-start">
-            <Eyebrow>{eyebrow}</Eyebrow>
-            <h2 className="mt-5 font-display text-3xl font-semibold tracking-tight text-ink md:text-[44px] md:leading-[1.06]">
+          <Reveal className="md:sticky md:top-[96px] md:self-start">
+            <h2 className="font-display text-3xl font-semibold tracking-tight text-ink md:text-[44px] md:leading-[1.06]">
               {heading || (<>One platform for the whole<br />back office</>)}
             </h2>
             <p className="mt-5 max-w-md text-base leading-relaxed text-body md:text-lg">{sub}</p>
-          </div>
+          </Reveal>
 
-          {/* Stacked feature blocks (20% narrower than the column) */}
-          <div className="flex flex-col gap-20 md:gap-28">
+          {/* Stacked feature blocks */}
+          <div className="flex flex-col gap-32 md:gap-44">
             {blocks.map((b) => (
-              <div key={b.tag} className="md:max-w-[80%]">
-                <div className="rounded-2xl border border-border bg-muted/50 p-4 md:p-6">{b.mock}</div>
-                <p className="mt-7 text-xs font-medium uppercase tracking-[0.12em] text-faint">{b.tag}</p>
-                <h3 className="mt-3 font-display text-2xl font-semibold tracking-tight text-ink md:text-[30px] md:leading-[1.15]">{b.title}</h3>
-                <p className="mt-3 text-base leading-relaxed text-body">{b.text}</p>
-                <ul className="mt-5 space-y-2.5">
-                  {b.bullets.map((bl) => (
-                    <li key={bl} className="flex items-center gap-2.5 text-[15px] text-ink">
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-soft text-brand"><Check className="h-3 w-3" /></span>
-                      {bl}
-                    </li>
-                  ))}
-                </ul>
+              <div key={b.tag}>
+                <Reveal>
+                  <div className="overflow-x-auto rounded-2xl border border-border bg-muted/50 p-4 md:p-6">{b.mock}</div>
+                </Reveal>
+                <Reveal delay={0.12}>
+                  <p className="mt-10 text-xs font-medium uppercase tracking-[0.12em] text-faint md:mt-12">{b.tag}</p>
+                  <h3 className="mt-3 font-display text-2xl font-semibold tracking-tight text-ink md:text-[30px] md:leading-[1.15]">{b.title}</h3>
+                  <p className="mt-3 text-base leading-relaxed text-body">{b.text}</p>
+                  <ul className="mt-5 space-y-2.5">
+                    {b.bullets.map((bl) => (
+                      <li key={bl} className="flex items-center gap-2.5 text-[15px] text-ink">
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-soft text-brand"><Check className="h-3 w-3" /></span>
+                        {bl}
+                      </li>
+                    ))}
+                  </ul>
+                </Reveal>
               </div>
             ))}
           </div>
         </div>
-      </Container>
+      </Bay>
     </section>
   );
 }

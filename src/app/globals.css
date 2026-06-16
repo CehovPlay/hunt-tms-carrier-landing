@@ -9,7 +9,7 @@
   --color-border-strong: #d8d8d8;
   --color-ink: #171717;         /* headings */
   --color-body: #454545;        /* body text */
-  --color-faint: #818181;       /* muted text */
+  --color-faint: #767676;       /* muted text — lowest grey passing WCAG AA on white */
   --color-brand: #3b82f6;       /* accent (CTA / links) */
   --color-brand-600: #2f6fe0;   /* hover */
   --color-brand-soft: #f0f4ff;  /* soft accent surface */
@@ -26,6 +26,14 @@
 html {
   scroll-behavior: smooth;
 }
+
+/* Lenis smooth scroll */
+html.lenis,
+html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+.lenis.lenis-smooth iframe { pointer-events: none; }
 
 body {
   background: var(--background);
@@ -69,7 +77,12 @@ body {
 @keyframes barGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 .bar-grow { transform-origin: left center; animation: barGrow 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 
+/* Step progress bar (How-it-works active step) */
+@keyframes progressGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.step-progress { transform-origin: left center; animation: progressGrow linear forwards; }
+
 @media (prefers-reduced-motion: reduce) {
   .rise, .bar-grow { animation: none; }
   .route-flow { animation: none; }
+  .step-progress { animation: none; transform: scaleX(1); }
 }

@@ -7,19 +7,29 @@ export function Container({ className = "", children }) {
 }
 export const WideContainer = Container;
 
-/* Button — 1:1 with the dispatch prod `btnComponent` (pill + inset shadow) */
-const SIZES = { sm: "h-10 px-6", md: "h-[52px] px-7", lg: "h-[52px] px-8" };
+// Inner content gutter used inside the bordered Frame — 60px on xl so content
+// sits 60px in from the vertical rules, scaling down on smaller screens.
+export function Bay({ className = "", children }) {
+  return <div className={`mx-auto w-full px-5 sm:px-8 md:px-10 xl:px-[60px] ${className}`}>{children}</div>;
+}
+
+/* Button — Aceternity-style pill: near-black primary with a double inset
+   highlight, transparent ghost secondary. */
+const SIZES = { sm: "h-9 px-4", md: "h-10 px-5", lg: "h-11 px-6" };
+// Aceternity inset highlight — a crisp bright top rim + soft glow below it (the
+// "white blink"), a faint bottom rim, and a soft outer lift.
+const INSET = "shadow-[inset_0_1px_0_0_rgba(255,255,255,0.55),inset_0_2.5px_3px_-2px_rgba(255,255,255,0.7),inset_0_-1px_1px_-1px_rgba(255,255,255,0.18),0_2px_10px_-3px_rgba(0,0,0,0.35)]";
 const VARIANTS = {
-  // accent (primary) — blue with inner top highlight
-  primary: "bg-brand text-white shadow-[inset_0px_2px_4px_1px_rgba(255,255,255,0.4)] hover:bg-brand-600",
-  // white — with inner bottom shadow
-  secondary: "bg-white text-ink shadow-[inset_0px_-2px_4px_1px_rgba(23,23,23,0.2)] hover:bg-muted",
+  // primary — neutral-900, 1:1 with the AI SaaS template
+  primary: `bg-neutral-900 text-white hover:bg-black/90 ${INSET}`,
+  // secondary — transparent ghost, grey hover
+  secondary: "bg-transparent text-ink hover:bg-[#f5f5f5]",
   ghost: "text-ink hover:bg-muted",
   link: "text-faint hover:text-ink",
 };
 
 export function Button({ href, variant = "primary", size = "md", className = "", children, ...props }) {
-  const cls = `inline-flex cursor-pointer items-center justify-center gap-2 rounded-full text-sm font-medium transition-colors duration-200 ${SIZES[size]} ${VARIANTS[variant]} ${className}`;
+  const cls = `inline-flex cursor-pointer items-center justify-center gap-2 rounded-full text-sm font-medium transition duration-200 ${SIZES[size]} ${VARIANTS[variant]} ${className}`;
   if (href) return <Link href={href} className={cls} {...props}>{children}</Link>;
   return <button type="button" className={cls} {...props}>{children}</button>;
 }
