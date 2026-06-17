@@ -199,6 +199,7 @@ export function DashboardMock() {
               <Search className="h-3.5 w-3.5" /> <span className="truncate">Search by driver, load id…</span>
               <span className="ml-auto rounded border border-border bg-white px-1.5 text-[11px]">⌘K</span>
             </div>
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border text-faint"><Bell className="h-3.5 w-3.5" /></span>
           </div>
 
           <div className="flex-1 space-y-3 overflow-hidden p-4">
@@ -342,8 +343,9 @@ export function DispatcherDashboardMock() {
       <div className="flex min-h-[909px] text-[13px]">
         {/* Sidebar */}
         <aside className="hidden w-[210px] shrink-0 flex-col border-r border-border bg-surface/60 sm:flex">
-          <div className="flex items-center border-b border-border px-4 py-3.5">
+          <div className="flex items-center justify-between border-b border-border px-4 py-3.5">
             <img src="/logo.svg" alt="huntTMS" className="h-[18px] w-auto" />
+            <PanelLeft className="h-3.5 w-3.5 text-faint" />
           </div>
           <nav className="space-y-3 px-3 py-4">
             {nav.map((group, gi) => (
@@ -362,7 +364,11 @@ export function DispatcherDashboardMock() {
           </nav>
           <div className="mt-auto flex items-center gap-2.5 border-t border-border px-4 py-3">
             <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink text-xs font-semibold text-white">D</span>
-            <div className="min-w-0 leading-tight"><p className="text-xs font-medium text-ink">Dino</p><p className="truncate text-[10px] text-faint">dino@huntlogistics.com</p></div>
+            <div className="min-w-0 flex-1 leading-tight">
+              <p className="text-xs font-medium text-ink">Dino</p>
+              <p className="truncate text-[10px] text-faint">Admin · dino@huntms.ai</p>
+            </div>
+            <LogOut className="h-3.5 w-3.5 shrink-0 text-faint" />
           </div>
         </aside>
 
@@ -370,11 +376,12 @@ export function DispatcherDashboardMock() {
         <div className="flex min-w-0 flex-1 flex-col">
           <div className="flex items-center gap-3 border-b border-border px-5 py-3">
             <PanelLeft className="h-4 w-4 text-faint" />
+            <span className="text-sm font-medium text-ink">Dashboard</span>
             <div className="ml-auto flex w-[280px] max-w-[55%] items-center gap-2 rounded-lg border border-border bg-muted/60 px-3 py-1.5 text-faint">
               <Search className="h-3.5 w-3.5" /> <span className="truncate">Search dispatchers, loads…</span>
               <span className="ml-auto rounded border border-border bg-white px-1.5 text-[11px]">⌘K</span>
             </div>
-            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-border text-faint"><Bell className="h-3.5 w-3.5" /></span>
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border text-faint"><Bell className="h-3.5 w-3.5" /></span>
           </div>
 
           <div className="flex-1 space-y-4 overflow-hidden p-5">
