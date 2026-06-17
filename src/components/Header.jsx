@@ -65,7 +65,7 @@ export default function Header() {
           <motion.div
             ref={pillRef}
             initial={false}
-            animate={{ maxWidth: scrolled ? 372 : fullW }}
+            animate={{ maxWidth: scrolled ? Math.min(372, fullW) : fullW }}
             transition={spring}
             className={`mx-auto flex w-full items-center justify-between rounded-full ${
               scrolled

@@ -13,7 +13,7 @@ export default function CtaBand({
       <Bay className="relative">
         <div className="mx-auto max-w-2xl text-center">
           <Reveal>
-            <h2 className="font-display text-3xl font-semibold tracking-tight text-ink md:text-[46px] md:leading-[1.08]">
+            <h2 className="font-display text-3xl font-semibold tracking-tight text-ink md:text-[44px] md:leading-[1.08]">
               {heading}
             </h2>
           </Reveal>
@@ -32,11 +32,11 @@ export default function CtaBand({
               required
               placeholder={placeholder}
               aria-label="Work email"
-              className="h-12 min-w-0 flex-1 rounded-l-full rounded-r-none border border-border bg-white px-5 text-sm text-ink placeholder:text-faint focus:border-brand focus:outline-none"
+              className="h-12 min-w-0 flex-1 rounded-l-full rounded-r-none border border-border bg-white px-5 text-sm text-ink placeholder:text-faint focus:border-brand focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-0"
             />
             <button
               type="submit"
-              className="inline-flex h-12 shrink-0 items-center gap-2 rounded-l-none rounded-r-full bg-neutral-900 px-6 text-sm font-medium text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.55),inset_0_2.5px_3px_-2px_rgba(255,255,255,0.7),inset_0_-1px_1px_-1px_rgba(255,255,255,0.18),0_2px_10px_-3px_rgba(0,0,0,0.35)] transition hover:bg-black/90"
+              className="inline-flex h-12 shrink-0 items-center gap-2 rounded-l-none rounded-r-full bg-ink px-6 text-sm font-medium text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.55),inset_0_2.5px_3px_-2px_rgba(255,255,255,0.7),inset_0_-1px_1px_-1px_rgba(255,255,255,0.18),0_2px_10px_-3px_rgba(0,0,0,0.35)] transition hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
             >
               Get started <ArrowRight className="h-4 w-4" />
             </button>

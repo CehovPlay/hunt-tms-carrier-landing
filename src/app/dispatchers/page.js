@@ -1,5 +1,6 @@
 import Hero from "@/components/Hero";
 import Features from "@/components/Features";
+import Showcase from "@/components/Showcase";
 import Faq from "@/components/Faq";
 import Testimonial from "@/components/Testimonial";
 import CtaBand from "@/components/CtaBand";
@@ -49,7 +50,7 @@ export default function DispatchersPage() {
           <Hero
             titleLead="Revolutionize your dispatching with"
             titleAccent="our TMS platform"
-            subtitle="Designed exclusively for dispatchers and dispatch services, our TMS simplifies load management, boosts efficiency, and drives profitability. Monitor, automate, and collaborate like never before."
+            subtitle="Built exclusively for dispatchers and dispatch services. Schedule on the timeline, scan rate cons with AI, and track every load on one screen — with the reporting to see who's actually profitable."
             ctaPrimary="Try it free"
             ctaSecondary="Get a demo"
             trust="Full access · No credit card required"
@@ -58,17 +59,23 @@ export default function DispatchersPage() {
           <FrameRule />
           <Features
             heading={<>Everything you need to<br />dispatch smarter</>}
-            sub="Discover how our platform empowers dispatchers with intuitive tools for seamless operations."
+            sub="Timeline scheduling, AI rate-con scanning, live tracking and dispatcher-level reporting — every tool in one workspace, no tab-juggling."
             blocks={BLOCKS}
           />
           <FrameRule />
-          <Faq heading="Get answers to your most common questions" qa={QA} />
+          <Showcase
+            variant="dispatcher"
+            heading="From rate con to dispatched — in three steps"
+            sub="Three steps. The platform handles the rest."
+          />
           <FrameRule />
           <Testimonial quotes={QUOTES} />
           <FrameRule />
+          <Faq heading="Get answers to your most common questions" qa={QA} />
+          <FrameRule />
           <CtaBand
-            heading="Ready to transform your dispatching?"
-            sub="Join hundreds of dispatchers who are saving hours every week, reducing errors, and growing their business with our AI-powered TMS platform."
+            heading="Ready to dispatch on one screen?"
+            sub="Schedule on the timeline, scan rate cons with AI, and run your whole operation from a single workspace. Start free — no credit card required."
             placeholder="you@yourdispatch.com"
           />
           <FrameRule />

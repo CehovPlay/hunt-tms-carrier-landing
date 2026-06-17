@@ -55,14 +55,14 @@ function CountUp({ value, decimals = 0, prefix = "", suffix = "", className = ""
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [inView, value]);
-  return <span ref={ref} className={className}>{prefix}{n.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}{suffix}</span>;
+  return <span ref={ref} className={`tabular-nums ${className}`}>{prefix}{n.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}{suffix}</span>;
 }
 
 // Small green "▲ 20.1%" delta pill used across the analytics mockups.
 function Delta({ value, tone = "green" }) {
   const tones = { green: "text-emerald-600", red: "text-rose-500" };
   return (
-    <motion.span initial={{ opacity: 0, x: -4 }} whileInView={{ opacity: 1, x: 0 }} viewport={VIEW} transition={{ duration: 0.4, delay: 0.5, ease: EASE }} className={`inline-flex items-center gap-0.5 text-[11px] font-medium ${tones[tone]}`}>
+    <motion.span initial={{ opacity: 0, x: -4 }} whileInView={{ opacity: 1, x: 0 }} viewport={VIEW} transition={{ duration: 0.4, delay: 0.5, ease: EASE }} className={`inline-flex items-center gap-0.5 text-[11px] font-medium tabular-nums ${tones[tone]}`}>
       <ArrowUpRight className="h-3 w-3" />{value}
     </motion.span>
   );
@@ -96,7 +96,7 @@ function MiniTable({ title, sub, head, rows, icon }) {
   );
 }
 
-/* ── Real hunterTMS dashboard (mirrors the HUNT-TMS app: sidebar + summary
+/* ── Real huntTMS dashboard (mirrors the HUNT-TMS app: sidebar + summary
    KPIs + analytics cards) ── */
 
 export function DashboardMock() {
@@ -161,7 +161,7 @@ export function DashboardMock() {
         {/* Sidebar */}
         <aside className="hidden w-[210px] shrink-0 flex-col border-r border-border bg-surface/60 sm:flex">
           <div className="flex items-center justify-between border-b border-border px-4 py-3.5">
-            <img src="/logo.svg" alt="hunterTMS" className="h-[18px] w-auto" />
+            <img src="/logo.svg" alt="huntTMS" className="h-[18px] w-auto" />
             <PanelLeft className="h-3.5 w-3.5 text-faint" />
           </div>
           <nav className="space-y-3 px-3 py-4">
@@ -170,7 +170,7 @@ export function DashboardMock() {
                 {gi > 0 ? <div className="mx-2 mb-2.5 border-t border-border" /> : null}
                 {group.map(([label, Icon, meta = {}]) => (
                   <div key={label} className={`flex items-center gap-2.5 rounded-lg px-2 py-1.5 ${meta.active ? "bg-white font-medium text-ink shadow-[0_1px_2px_rgba(23,23,23,0.06)]" : meta.soon ? "text-faint/55" : "text-faint"}`}>
-                    <Icon className="h-[15px] w-[15px]" />
+                    <Icon className="h-4 w-4" />
                     <span className="flex-1">{label}</span>
                     {meta.count ? <span className="text-[11px] text-faint">{meta.count}</span> : null}
                     {meta.soon ? <span className="rounded bg-muted px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wide text-faint">Soon</span> : null}
@@ -183,7 +183,7 @@ export function DashboardMock() {
             <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink text-xs font-semibold text-white">D</span>
             <div className="min-w-0 flex-1 leading-tight">
               <p className="text-xs font-medium text-ink">Dino</p>
-              <p className="truncate text-[10px] text-faint">Admin · dino@hunt.tms</p>
+              <p className="truncate text-[10px] text-faint">Admin · dino@huntms.ai</p>
             </div>
             <LogOut className="h-3.5 w-3.5 shrink-0 text-faint" />
           </div>
@@ -351,8 +351,8 @@ export function DispatcherDashboardMock() {
                 {gi > 0 ? <div className="mx-2 mb-3 border-t border-dashed border-border" /> : null}
                 <div className="space-y-0.5">
                   {group.map(([label, Icon, meta = {}]) => (
-                    <div key={label} className={`flex items-center gap-2.5 rounded-lg px-2 py-2 ${meta.active ? "bg-white font-medium text-ink shadow-[0_1px_2px_rgba(23,23,23,0.06)]" : "text-faint"}`}>
-                      <Icon className="h-[15px] w-[15px]" />
+                    <div key={label} className={`flex items-center gap-2.5 rounded-lg px-2 py-1.5 ${meta.active ? "bg-white font-medium text-ink shadow-[0_1px_2px_rgba(23,23,23,0.06)]" : "text-faint"}`}>
+                      <Icon className="h-4 w-4" />
                       <span>{label}</span>
                     </div>
                   ))}
@@ -361,7 +361,7 @@ export function DispatcherDashboardMock() {
             ))}
           </nav>
           <div className="mt-auto flex items-center gap-2.5 border-t border-border px-4 py-3">
-            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="" className="h-7 w-7 shrink-0 rounded-full object-cover" />
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink text-xs font-semibold text-white">D</span>
             <div className="min-w-0 leading-tight"><p className="text-xs font-medium text-ink">Dino</p><p className="truncate text-[10px] text-faint">dino@huntlogistics.com</p></div>
           </div>
         </aside>
@@ -416,84 +416,6 @@ export function DispatcherDashboardMock() {
   );
 }
 
-/* Real hunterTMS Loads board — the rate-con-to-paid pipeline with linked
-   invoice + payroll status (mirrors the app's Loads table). */
-export function LoadsBoardMock() {
-  const tone = { green: "bg-emerald-50 text-emerald-600", amber: "bg-amber-50 text-amber-600", blue: "bg-brand-soft text-brand", grey: "bg-muted text-faint" };
-  const rows = [
-    ["#9157553", "Chicago, IL → Dallas, TX", "Gudelio Ramos", "#1974", "Blue Arrow Brokerage", "$3,450", ["Invoiced", "blue"], ["Ready", "green"], ["Delivered", "green"]],
-    ["#9157619", "Austin, TX → Denver, CO", "Andrew Stone", "#2042", "Summit Freight Partners", "$2,875", ["Invoiced", "green"], ["Review", "amber"], ["Delivered", "green"]],
-    ["#9157901", "Omaha, NE → Phoenix, AZ", "Maks Orlov", "#1888", "Northline Transport", "$4,100", ["In Review", "amber"], ["Paid", "green"], ["Docs Missing", "amber"]],
-  ];
-  const Badge = ([label, t]) => <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${tone[t]}`}>{label}</span>;
-  return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-[0_30px_90px_-30px_rgba(23,23,23,0.2)]">
-      <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
-        <div className="flex items-center gap-2 text-ink"><Route className="h-4 w-4" /><span className="text-sm font-semibold">Loads</span></div>
-        <span className="rounded-full bg-muted px-2.5 py-0.5 text-[11px] text-faint">4 active · May 2026</span>
-      </div>
-      <div className="hidden grid-cols-[1.4fr_1.1fr_1fr_0.7fr_0.8fr_0.8fr_0.9fr] gap-3 border-b border-border bg-muted/40 px-5 py-2.5 text-[10px] uppercase tracking-wide text-faint md:grid">
-        <span>Load</span><span>Driver</span><span>Customer</span><span>Rate</span><span>Invoice</span><span>Payroll</span><span>Status</span>
-      </div>
-      <div className="divide-y divide-border text-[13px]">
-        {rows.map(([id, trip, drv, truck, cust, rate, inv, pay, st]) => (
-          <div key={id} className="grid grid-cols-2 items-center gap-3 px-5 py-3.5 md:grid-cols-[1.4fr_1.1fr_1fr_0.7fr_0.8fr_0.8fr_0.9fr]">
-            <div className="min-w-0"><p className="font-medium text-ink">{id}</p><p className="truncate text-[11px] text-faint">{trip}</p></div>
-            <div className="min-w-0"><p className="truncate text-ink">{drv}</p><p className="text-[11px] text-faint">{truck}</p></div>
-            <p className="hidden truncate text-body md:block">{cust}</p>
-            <span className="hidden font-medium text-ink md:block">{rate}</span>
-            <span className="hidden md:block">{Badge(inv)}</span>
-            <span className="hidden md:block">{Badge(pay)}</span>
-            <span className="flex justify-end md:justify-start">{Badge(st)}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* Center visual for the "rate con to paid" section — one load's lifecycle. */
-export function LoadFlowMock() {
-  const tone = { green: "bg-emerald-50 text-emerald-600", blue: "bg-brand-soft text-brand" };
-  const steps = [
-    { icon: FileScan, title: "Rate Con parsed", sub: "Chicago, IL → Dallas, TX · $3,450", badge: ["AI", "blue"] },
-    { icon: Truck, title: "Dispatched & delivered", sub: "Gudelio Ramos · #1974 · POD collected", badge: ["Delivered", "green"] },
-    { icon: FileText, title: "Invoice #101907 sent", sub: "Blue Arrow Brokerage · to factor · Net 30", badge: ["Ready", "green"] },
-    { icon: WalletCards, title: "Settlement SET-1048", sub: "Driver paid · $535 net", badge: ["Paid", "green"] },
-  ];
-  return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-[0_30px_90px_-30px_rgba(23,23,23,0.2)]">
-      <div className="flex items-center gap-2 border-b border-border px-4 py-3">
-        <span className="h-2.5 w-2.5 rounded-full bg-border-strong" />
-        <span className="h-2.5 w-2.5 rounded-full bg-border" />
-        <span className="h-2.5 w-2.5 rounded-full bg-border" />
-        <span className="ml-3 text-xs text-faint">hunterTMS · Load #9157553</span>
-      </div>
-      <div className="relative space-y-1 p-5">
-        {/* connector line */}
-        <span className="absolute left-[31px] top-9 bottom-9 w-px bg-border" />
-        {steps.map((s, i) => {
-          const Icon = s.icon;
-          return (
-            <div key={i} className="relative flex items-start gap-3 rounded-xl px-2 py-3">
-              <span className="relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-white text-faint">
-                <Icon className="h-3.5 w-3.5" />
-              </span>
-              <div className="min-w-0 flex-1 pt-0.5">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="truncate text-sm font-medium text-ink">{s.title}</p>
-                  <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${tone[s.badge[1]]}`}>{s.badge[0]}</span>
-                </div>
-                <p className="mt-0.5 truncate text-xs text-faint">{s.sub}</p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
 function Frame({ title, children }) {
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-white shadow-[0_24px_70px_rgba(23,23,23,0.08)]">
@@ -526,7 +448,7 @@ export function LoadsMock() {
     ["#9157901", "Omaha → Phoenix", "Maks Orlov", "#1888", "$4,100", "green", "Paid"],
   ];
   return (
-    <Frame title="hunterTMS · Loads">
+    <Frame title="huntTMS · Loads">
       <Stagger className="grid grid-cols-4 gap-px bg-border" gap={0.06}>
         {kpis.map(([l, v, p]) => (
           <Item key={l} variants={RISE} className="bg-white px-4 py-3.5">
@@ -607,7 +529,7 @@ function MapCanvas({ height = 360, labels = true }) {
 
 export function MapMock() {
   return (
-    <Frame title="hunterTMS · Live map">
+    <Frame title="huntTMS · Live map">
       <MapCanvas height={360} />
     </Frame>
   );
@@ -616,7 +538,7 @@ export function MapMock() {
 export function TimelineMock() {
   // Mirrors the platform timeline: lane label + day grid + bars (id tag on top,
   // route + rate inside a muted body with a colored left accent).
-  const TONE = { delivered: "#13AC67", en_route: "#FDB022", active: "#3b82f6" };
+  const TONE = { delivered: "#10b981", en_route: "#f59e0b", active: "#3b82f6" };
   const lanes = [
     { d: "Andrew Stone", t: "#2042", bars: [{ id: "#9157619", route: "TX → CO", rate: "$2,875", l: 8, w: 30, tone: "delivered" }, { id: "#9158004", route: "CO → IL", rate: "$1,980", l: 62, w: 24, tone: "active" }] },
     { d: "Gudelio Ramos", t: "#1974", bars: [{ id: "#9157553", route: "IL → TX", rate: "$3,450", l: 28, w: 34, tone: "active" }] },
@@ -624,7 +546,7 @@ export function TimelineMock() {
   ];
   let i = 0;
   return (
-    <Frame title="hunterTMS · Timeline">
+    <Frame title="huntTMS · Timeline">
       <div className="grid grid-cols-[120px_1fr]">
         <div className="border-b border-r border-border bg-muted/40 px-3 py-2 text-[10px] font-medium text-faint">May 2026</div>
         <div className="grid grid-cols-7 border-b border-border bg-muted/40 text-center text-[10px] text-faint">
@@ -666,7 +588,7 @@ export function BillingMock() {
   const meta = [["Bill to", "Blue Arrow Brokerage"], ["Terms", "Net 30"], ["Route", "Chicago → Dallas"], ["Distance", "1,432 mi"]];
   const lines = [["Line haul", "$3,250"], ["Fuel surcharge", "$200"]];
   return (
-    <Frame title="hunterTMS · Invoice">
+    <Frame title="huntTMS · Invoice">
       <div className="p-5">
         <div className="flex items-start justify-between">
           <div><p className="text-sm font-bold text-ink">Hunt Carrier LLC</p><p className="text-[11px] text-faint">MC-1048291 · DOT 4203694</p></div>
@@ -699,7 +621,7 @@ export function ExpenseMock() {
     ["Scale", "May 18, 2026", "$12.00", "blue", "Ready"],
   ];
   return (
-    <Frame title="hunterTMS · Expenses">
+    <Frame title="huntTMS · Expenses">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <p className="text-sm font-semibold text-ink">Expenses (3)</p>
         <CountUp value={712.12} decimals={2} prefix="−$" className="text-sm font-semibold text-ink" />
@@ -719,7 +641,7 @@ export function ExpenseMock() {
 
 export function PayrollMock() {
   return (
-    <Frame title="hunterTMS · Payroll">
+    <Frame title="huntTMS · Payroll">
       <div className="p-5">
         <div className="flex items-center justify-between">
           <div><p className="text-sm font-semibold text-ink">Gudelio Ramos</p><p className="text-[11px] text-faint">SET-1048 · Per mile · May 13–20</p></div>
@@ -750,7 +672,7 @@ export function ComplianceMock() {
     ["Drug test", "Pending result", "amber", "Review"],
   ];
   return (
-    <Frame title="hunterTMS · Driver">
+    <Frame title="huntTMS · Driver">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <div><p className="text-sm font-semibold text-ink">Gudelio Ramos</p><p className="text-[11px] text-faint">Company driver · Zigzag Carrier LLC</p></div>
         <Badge tone="green">Active</Badge>
@@ -795,7 +717,7 @@ export function HuntBotMock() {
   }, [inView]); // eslint-disable-line react-hooks/exhaustive-deps
   const next = step < msgs.length ? msgs[step] : null;
   return (
-    <Frame title="hunterTMS · HuntBot">
+    <Frame title="huntTMS · HuntBot">
       <div ref={ref} className="min-h-[176px] space-y-3 p-4">
         {msgs.slice(0, step).map((m, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 8, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.35, ease: EASE }} className={`flex ${m.who === "user" ? "justify-end" : "justify-start"}`}>
@@ -831,7 +753,7 @@ export function HuntBotMock() {
 
 /* 1 · Timeline — calendar board of every truck, conflicts at a glance. */
 export function DispatchTimelineMock() {
-  const TONE = { delivered: "#13AC67", active: "#3b82f6", en_route: "#FDB022", late: "#ef4444", booked: "#9ca3af" };
+  const TONE = { delivered: "#10b981", active: "#3b82f6", en_route: "#f59e0b", late: "#f43f5e", booked: "#9ca3af" };
   const days = ["Tue 28", "Wed 29", "Thu 30", "Fri 31", "Sat 1"];
   const lanes = [
     { d: "Michael Johnson", t: "#2042", bars: [
@@ -853,7 +775,7 @@ export function DispatchTimelineMock() {
   ];
   let k = 0;
   return (
-    <Frame title="hunterTMS · Timeline">
+    <Frame title="huntTMS · Timeline">
       <div className="grid grid-cols-[132px_1fr]">
         <div className="border-b border-r border-border bg-muted/40 px-3 py-2 text-[10px] font-medium text-faint">May 2026</div>
         <div className="grid grid-cols-5 border-b border-border bg-muted/40 text-center text-[10px] text-faint">
@@ -898,9 +820,9 @@ export function DispatchTimelineMock() {
 export function ViewTotalsMock() {
   const ranges = ["Day", "Week", "Month"];
   const DATA = {
-    Day: { rev: 51508, miles: 732, rpm: 4.05, rd: "5.4%", md: "3.1%", pd: "2.0%", chart: [120, 138, 132, 165, 150, 196], axis: ["8a", "10a", "12p", "2p", "4p", "6p"] },
-    Week: { rev: 360820, miles: 5120, rpm: 4.12, rd: "9.8%", md: "6.4%", pd: "4.2%", chart: [80, 120, 104, 150, 168, 210], axis: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] },
-    Month: { rev: 1545231, miles: 21950, rpm: 4.20, rd: "20.1%", md: "12.4%", pd: "20.1%", chart: [110, 142, 128, 182, 158, 232], axis: ["W1", "W2", "W3", "W4", "W5", "W6"] },
+    Day: { rev: 51508, miles: 12718, rpm: 4.05, rd: "5.4%", md: "3.1%", pd: "2.0%", chart: [120, 138, 132, 165, 150, 196], axis: ["8a", "10a", "12p", "2p", "4p", "6p"] },
+    Week: { rev: 360820, miles: 87578, rpm: 4.12, rd: "9.8%", md: "6.4%", pd: "4.2%", chart: [80, 120, 104, 150, 168, 210], axis: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] },
+    Month: { rev: 1545231, miles: 367912, rpm: 4.20, rd: "20.1%", md: "12.4%", pd: "20.1%", chart: [110, 142, 128, 182, 158, 232], axis: ["W1", "W2", "W3", "W4", "W5", "W6"] },
   };
   const [ref, inView] = useInViewLoop();
   const [ri, setRi] = useState(2);
@@ -917,7 +839,7 @@ export function ViewTotalsMock() {
     { label: "Rate per mile", Icon: BarChart3, val: `$${d.rpm.toFixed(2)}`, delta: d.pd },
   ];
   return (
-    <Frame title="hunterTMS · Totals">
+    <Frame title="huntTMS · Totals">
       <div ref={ref} className="flex items-center justify-between border-b border-border px-4 py-3">
         <p className="text-sm font-semibold text-ink">Totals</p>
         <div className="flex items-center gap-0.5 rounded-lg border border-border bg-muted/50 p-0.5 text-[11px]">
@@ -934,10 +856,10 @@ export function ViewTotalsMock() {
           <div key={s.label} className="px-4 py-3.5">
             <div className="flex items-center gap-1.5 text-faint"><s.Icon className="h-3.5 w-3.5" /><span className="truncate text-[11px] font-medium">{s.label}</span></div>
             <div className="mt-1.5 h-[26px] overflow-hidden">
-              <motion.p key={s.val} initial={{ opacity: 0, y: 9 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: EASE }} className="truncate text-lg font-semibold tracking-tight text-ink">{s.val}</motion.p>
+              <motion.p key={s.val} initial={{ opacity: 0, y: 9 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: EASE }} className="truncate text-lg font-semibold tabular-nums tracking-tight text-ink">{s.val}</motion.p>
             </div>
             <div className="mt-0.5 flex items-center gap-1">
-              <span className="inline-flex items-center gap-0.5 text-[11px] font-medium text-emerald-600"><ArrowUpRight className="h-3 w-3" />{s.delta}</span>
+              <span className="inline-flex items-center gap-0.5 text-[11px] font-medium tabular-nums text-emerald-600"><ArrowUpRight className="h-3 w-3" />{s.delta}</span>
               <span className="hidden text-[10px] text-faint sm:inline">vs last</span>
             </div>
           </div>
@@ -968,7 +890,7 @@ export function DispatchMapMock() {
     return () => clearInterval(id);
   }, [inView, drivers.length]);
   return (
-    <Frame title="hunterTMS · Map">
+    <Frame title="huntTMS · Map">
       <div className="relative">
         <MapCanvas height={340} labels={false} />
         <div ref={ref} className="absolute right-3 top-3 w-[210px] max-w-[58%] rounded-xl border border-border bg-white/95 p-2 shadow-[0_12px_40px_-12px_rgba(23,23,23,0.25)] backdrop-blur">
@@ -994,14 +916,14 @@ export function DispatchMapMock() {
 /* 4 · Full load info — one source of truth: stops, money, docs, notes. */
 export function LoadInfoMock() {
   const stops = [
-    ["DH", "4033 NW Yeon Ave, Portland, OR", "500 mi · 33h 45m", "bg-neutral-700"],
-    ["1", "10185 NW 307th Ave, North Plains, OR", "663 mi · 15h 45m", "bg-brand"],
-    ["2", "3229 JACFL UPS JACKS, Jacksonville, FL", "Delivery", "bg-emerald-500"],
+    ["1", "4033 NW Yeon Ave, Portland, OR", "Pickup · 663 mi to next", "bg-brand"],
+    ["2", "10185 NW 307th Ave, North Plains, OR", "663 mi · 15h 45m", "bg-neutral-400"],
+    ["3", "3229 JACFL UPS JACKS, Jacksonville, FL", "Delivery", "bg-emerald-500"],
   ];
   const meta = [["Broker", "Blue Arrow Brokerage"], ["D/H miles", "48 mi"], ["Payment", "$4,200"], ["Expenses", "−$712"]];
   const docs = [["RC", "bg-brand"], ["BOL", "bg-emerald-500"], ["LUMP", "bg-amber-500"]];
   return (
-    <Frame title="hunterTMS · Load #456432">
+    <Frame title="huntTMS · Load #456432">
       <div className="grid md:grid-cols-[1.2fr_1fr]">
         <div className="border-b border-border p-4 md:border-b-0 md:border-r">
           <p className="mb-3 text-[10px] font-medium uppercase tracking-[0.12em] text-faint">Route · 3 stops</p>
@@ -1066,7 +988,7 @@ export function LoadHistoryMock() {
     return () => clearInterval(id);
   }, [inView, events.length]);
   return (
-    <Frame title="hunterTMS · Load history">
+    <Frame title="huntTMS · Load history">
       <div ref={ref} className="relative p-5">
         <span className="absolute left-[26px] top-8 bottom-9 w-px bg-border" />
         {events.map(([action, who, ts, bg], i) => {
@@ -1093,10 +1015,10 @@ export function LoadHistoryMock() {
 export function StatusViewMock() {
   const statuses = [
     ["New load", "Created and added to the workflow — carrier/driver not confirmed yet.", "#9ca3af", "bg-muted text-faint"],
-    ["En route", "In transit — the driver is moving toward delivery.", "#FDB022", "bg-amber-50 text-amber-600"],
-    ["Driver late", "Late compared to the scheduled pickup or delivery window.", "#ef4444", "bg-rose-50 text-rose-500"],
-    ["Delivered", "The load has been delivered and the shipment is complete.", "#13AC67", "bg-emerald-50 text-emerald-600"],
-    ["TONU", "Truck Ordered Not Used — booked but canceled or not loaded.", "#ef4444", "bg-rose-50 text-rose-500"],
+    ["En route", "In transit — the driver is moving toward delivery.", "#f59e0b", "bg-amber-50 text-amber-600"],
+    ["Driver late", "Late compared to the scheduled pickup or delivery window.", "#f43f5e", "bg-rose-50 text-rose-500"],
+    ["Delivered", "The load has been delivered and the shipment is complete.", "#10b981", "bg-emerald-50 text-emerald-600"],
+    ["TONU", "Truck Ordered Not Used — booked but canceled or not loaded.", "#f43f5e", "bg-rose-50 text-rose-500"],
     ["Billed", "An invoice has been issued for the load.", "#3b82f6", "bg-brand-soft text-brand"],
   ];
   const [ref, inView] = useInViewLoop();
@@ -1107,7 +1029,7 @@ export function StatusViewMock() {
     return () => clearInterval(id);
   }, [inView, statuses.length]);
   return (
-    <Frame title="hunterTMS · Load statuses">
+    <Frame title="huntTMS · Load statuses">
       <Stagger ref={ref} className="grid gap-px bg-border sm:grid-cols-2" gap={0.06}>
         {statuses.map(([label, desc, accent, badge], i) => (
           <Item key={label} variants={RISE} className="relative bg-white p-4 pl-5">
@@ -1130,7 +1052,7 @@ export function RcScannerMock() {
     ["Pick-up", "Kemet Electronics Corp.", "3450 Roy Orr Blvd, Grand Prairie, TX"],
     ["Delivery", "3229 JACFL UPS JACKS", "4420 Imeson RD, Jacksonville, FL"],
   ];
-  const cells = [["Size & Type", "53' TORD"], ["Pieces", "20"], ["Weight", "45,000 lb"], ["Miles", "1,010 mi"], ["Rate", "$4,200.00"], ["Equipment", "Dry Van"]];
+  const cells = [["Size & Type", "Full / 53'"], ["Pieces", "20"], ["Weight", "45,000 lb"], ["Miles", "1,010 mi"], ["Rate", "$4,200.00"], ["Equipment", "Dry Van"]];
   const total = fields.length + cells.length; // 8
   const [ref, inView] = useInViewLoop();
   const [n, setN] = useState(0);
@@ -1144,7 +1066,7 @@ export function RcScannerMock() {
     return () => clearInterval(id);
   }, [inView, total]);
   return (
-    <Frame title="hunterTMS · AI RC Scanner">
+    <Frame title="huntTMS · AI RC Scanner">
       <div ref={ref} className="grid md:grid-cols-2">
         <div className="flex flex-col border-b border-border bg-muted/40 p-5 md:border-b-0 md:border-r">
           <div className="relative flex-1 overflow-hidden rounded-lg border border-border bg-white p-4 shadow-sm">
@@ -1199,7 +1121,7 @@ export function TeamMock() {
     return () => clearInterval(id);
   }, [inView, people.length]);
   return (
-    <Frame title="hunterTMS · Team">
+    <Frame title="huntTMS · Team">
       <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
         <div className="flex items-center gap-1 rounded-lg border border-border bg-muted/50 p-0.5 text-[12px]">
           {tabs.map(([label, count, active]) => (
@@ -1224,7 +1146,7 @@ export function TeamMock() {
             </div>
             <span className="relative text-faint">{role}</span>
             <span className="relative flex items-center justify-end gap-1.5">
-              <span className={`h-1.5 w-1.5 rounded-full ${st === "active" ? "bg-emerald-500" : "bg-amber-400"}`} />
+              <span className={`h-1.5 w-1.5 rounded-full ${st === "active" ? "bg-emerald-500" : "bg-amber-500"}`} />
               <span className="text-[12px] text-faint">{st === "active" ? "Active" : "Invited"}</span>
             </span>
           </Item>
@@ -1256,7 +1178,7 @@ export function ReportsMock() {
     return () => clearInterval(id);
   }, [inView]);
   return (
-    <Frame title="hunterTMS · Reports">
+    <Frame title="huntTMS · Reports">
       <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
         <p className="text-sm font-semibold text-ink">Dispatcher performance</p>
         <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-faint">May 2026</span>
@@ -1316,7 +1238,7 @@ export function DashboardSummaryMock() {
   const dispatchers = [["Michael Johnson", "456", "$200,000"], ["Sarah Williams", "378", "$183,000"], ["Christopher Brown", "345", "$150,000"], ["Emily Davis", "321", "$80,000"]];
   const carriers = [["XPO Logistics", "456", "$204,000"], ["Cardinal Logistics", "378", "$182,000"], ["Landstar", "345", "$151,000"], ["Estes Express", "321", "$88,000"]];
   return (
-    <Frame title="hunterTMS · Dashboard">
+    <Frame title="huntTMS · Dashboard">
       <div className="space-y-4 p-4">
         <Stagger className="grid grid-cols-3 gap-3">
           {kpis.map(({ label, v, p, delta }) => (

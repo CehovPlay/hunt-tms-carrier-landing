@@ -11,12 +11,12 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "hunterTMS for Carriers — Run your fleet from one platform",
+  title: "huntTMS for Carriers — Run your fleet from one platform",
   description:
     "The carrier-side TMS by LoadHunter. Dispatch, loads, invoicing, factoring, expenses, payroll, driver compliance and a live map — automated by AI, in one place.",
   keywords: ["carrier TMS", "trucking software", "fleet management", "dispatch", "invoicing", "factoring", "payroll", "LoadHunter"],
   openGraph: {
-    title: "hunterTMS for Carriers",
+    title: "huntTMS for Carriers",
     description: "Run your fleet from one platform — dispatch, billing, payroll and compliance, automated by AI.",
     type: "website",
   },

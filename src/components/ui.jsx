@@ -9,8 +9,8 @@ export const WideContainer = Container;
 
 // Inner content gutter used inside the bordered Frame — 60px on xl so content
 // sits 60px in from the vertical rules, scaling down on smaller screens.
-export function Bay({ className = "", children }) {
-  return <div className={`mx-auto w-full px-5 sm:px-8 md:px-10 xl:px-[60px] ${className}`}>{children}</div>;
+export function Bay({ className = "", children, ...props }) {
+  return <div className={`mx-auto w-full px-5 sm:px-8 md:px-10 xl:px-[60px] ${className}`} {...props}>{children}</div>;
 }
 
 /* Button — Aceternity-style pill: near-black primary with a double inset
@@ -20,16 +20,18 @@ const SIZES = { sm: "h-9 px-4", md: "h-10 px-5", lg: "h-11 px-6" };
 // "white blink"), a faint bottom rim, and a soft outer lift.
 const INSET = "shadow-[inset_0_1px_0_0_rgba(255,255,255,0.55),inset_0_2.5px_3px_-2px_rgba(255,255,255,0.7),inset_0_-1px_1px_-1px_rgba(255,255,255,0.18),0_2px_10px_-3px_rgba(0,0,0,0.35)]";
 const VARIANTS = {
-  // primary — neutral-900, 1:1 with the AI SaaS template
-  primary: `bg-neutral-900 text-white hover:bg-black/90 ${INSET}`,
+  // primary — near-black ink token, 1:1 with the AI SaaS template
+  primary: `bg-ink text-white hover:bg-black/90 ${INSET}`,
   // secondary — transparent ghost, grey hover
-  secondary: "bg-transparent text-ink hover:bg-[#f5f5f5]",
+  secondary: "bg-transparent text-ink hover:bg-muted",
   ghost: "text-ink hover:bg-muted",
   link: "text-faint hover:text-ink",
 };
 
+const FOCUS = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
+
 export function Button({ href, variant = "primary", size = "md", className = "", children, ...props }) {
-  const cls = `inline-flex cursor-pointer items-center justify-center gap-2 rounded-full text-sm font-medium transition duration-200 ${SIZES[size]} ${VARIANTS[variant]} ${className}`;
+  const cls = `inline-flex cursor-pointer items-center justify-center gap-2 rounded-full text-sm font-medium transition duration-200 ${FOCUS} ${SIZES[size]} ${VARIANTS[variant]} ${className}`;
   if (href) return <Link href={href} className={cls} {...props}>{children}</Link>;
   return <button type="button" className={cls} {...props}>{children}</button>;
 }
@@ -46,8 +48,8 @@ export function Eyebrow({ children, className = "" }) {
 export function Wordmark({ badge = "For carriers", className = "" }) {
   return (
     <div className={`flex items-center gap-[10px] ${className}`}>
-      <Link href="/" className="text-ink"><img src="/logo.svg" alt="hunterTMS" className="h-5 w-auto" /></Link>
-      {badge ? <span className="w-fit rounded-full bg-[#E8E8E8] px-[6px] py-[2px] text-sm font-medium text-ink">{badge}</span> : null}
+      <Link href="/" className="text-ink"><img src="/logo.svg" alt="huntTMS" className="h-5 w-auto" /></Link>
+      {badge ? <span className="w-fit rounded-full bg-border px-[6px] py-[2px] text-sm font-medium text-ink">{badge}</span> : null}
     </div>
   );
 }

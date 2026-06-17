@@ -29,15 +29,22 @@ export default function Showcase({
 } = {}) {
   const STEPS = VARIANTS[variant] || VARIANTS.carrier;
   const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
 
   useEffect(() => {
+    if (paused) return;
     const id = setTimeout(() => setActive((a) => (a + 1) % STEPS.length), DURATION);
     return () => clearTimeout(id);
-  }, [active, STEPS.length]);
+  }, [active, paused, STEPS.length]);
 
   return (
     <section id="how" className="bg-surface py-24 md:py-28">
-      <Bay>
+      <Bay
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        onFocusCapture={() => setPaused(true)}
+        onBlurCapture={() => setPaused(false)}
+      >
         <Reveal className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-medium text-brand">{eyebrow}</p>
           <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink md:text-[44px] md:leading-[1.08]">{heading}</h2>
@@ -55,7 +62,7 @@ export default function Showcase({
                   key={s.title}
                   type="button"
                   onClick={() => setActive(i)}
-                  className={`relative overflow-hidden rounded-xl border-t border-border px-5 py-6 text-left transition-colors first:border-t-0 ${on ? "bg-white shadow-[0_1px_2px_rgba(23,23,23,0.05)]" : "hover:bg-white/50"}`}
+                  className={`relative overflow-hidden rounded-xl border-t border-border px-5 py-6 text-left transition-colors first:border-t-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-inset ${on ? "bg-white shadow-[0_1px_2px_rgba(23,23,23,0.05)]" : "hover:bg-white/50"}`}
                 >
                   <div className="flex items-center gap-3">
                     <Icon className={`h-5 w-5 ${on ? "text-brand" : "text-faint"}`} />
