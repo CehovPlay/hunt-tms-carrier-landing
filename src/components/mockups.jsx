@@ -156,10 +156,10 @@ export function DashboardMock() {
   const exp = pathOf(expense, 3500, 5000);
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-white">
+    <div className="@container overflow-hidden rounded-2xl border border-border bg-white">
       <div className="flex min-h-[560px] text-[13px]">
         {/* Sidebar */}
-        <aside className="flex w-[210px] shrink-0 flex-col border-r border-border bg-surface/60">
+        <aside className="hidden w-[210px] shrink-0 flex-col border-r border-border bg-surface/60 @5xl:flex">
           <div className="flex items-center justify-between border-b border-border px-4 py-3.5">
             <img src="/logo.svg" alt="huntTMS" className="h-[18px] w-auto" />
             <PanelLeft className="h-3.5 w-3.5 text-faint" />
@@ -204,7 +204,7 @@ export function DashboardMock() {
 
           <div className="flex-1 space-y-3 overflow-hidden p-4">
             {/* KPI cards */}
-            <Stagger className="grid grid-cols-5 gap-3">
+            <Stagger className="grid grid-cols-2 gap-3 @5xl:grid-cols-5">
               {kpis.map(({ label, v, p, hint }) => (
                 <Item key={label} variants={RISE} className="rounded-xl border border-border bg-white p-4">
                   <p className="truncate text-xs font-medium text-faint">{label}</p>
@@ -221,11 +221,11 @@ export function DashboardMock() {
                 <p className="text-sm font-bold">Meet HuntBot</p>
                 <p className="mt-0.5 text-[11px] leading-5 text-white/80">Your AI dispatch assistant — open any screen, generate payroll, and compare BOL vs Rate Confirmation just by asking.</p>
               </div>
-              <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium">See what it can do <ChevronRight className="h-3.5 w-3.5" /></span>
+              <span className="hidden shrink-0 items-center gap-1 text-xs font-medium @3xl:inline-flex">See what it can do <ChevronRight className="h-3.5 w-3.5" /></span>
             </motion.div>
 
             {/* Needs attention · Monthly profit · Expenses */}
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 gap-3 @5xl:grid-cols-3">
               <div className="rounded-xl border border-border bg-white p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2">
@@ -285,7 +285,7 @@ export function DashboardMock() {
             </div>
 
             {/* Top brokers · Outstanding invoices · Pending settlements */}
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 gap-3 @5xl:grid-cols-3">
               <MiniTable icon={<Building2 className="h-3.5 w-3.5" />} title="Top brokers" sub="By gross booked" head={["Broker", "Loads", "Gross"]} rows={brokers.map(([a, b, c]) => [a, b, c])} />
               <MiniTable icon={<FileText className="h-3.5 w-3.5" />} title="Outstanding invoices" sub="Awaiting payment" head={["Invoice", "Status", "Amount"]} rows={invoices.map(([r, s, t, amt]) => [r, <span key={s} className={`inline-flex whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-medium ${tone[t]}`}>{s}</span>, amt])} />
               <MiniTable icon={<WalletCards className="h-3.5 w-3.5" />} title="Pending settlements" sub="Not yet paid" head={["Settlement", "Status", "Amount"]} rows={settlements.map(([n, s, t, amt]) => [n, <span key={s} className={`inline-flex whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-medium ${tone[t]}`}>{s}</span>, amt])} />
@@ -339,10 +339,10 @@ export function DispatcherDashboardMock() {
   const brokers = [["Blue Arrow Brokerage", "19", "$84,300"], ["Summit Freight", "16", "$71,050"], ["Northline Transport", "12", "$58,400"], ["Skyline Logistics", "9", "$44,200"]];
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-white">
+    <div className="@container overflow-hidden rounded-2xl border border-border bg-white">
       <div className="flex min-h-[909px] text-[13px]">
         {/* Sidebar */}
-        <aside className="flex w-[210px] shrink-0 flex-col border-r border-border bg-surface/60">
+        <aside className="hidden w-[210px] shrink-0 flex-col border-r border-border bg-surface/60 @5xl:flex">
           <div className="flex items-center justify-between border-b border-border px-4 py-3.5">
             <img src="/logo.svg" alt="huntTMS" className="h-[18px] w-auto" />
             <PanelLeft className="h-3.5 w-3.5 text-faint" />
@@ -386,7 +386,7 @@ export function DispatcherDashboardMock() {
 
           <div className="flex-1 space-y-4 overflow-hidden p-5">
             {/* KPIs */}
-            <Stagger className="grid grid-cols-4 gap-3">
+            <Stagger className="grid grid-cols-2 gap-3 @5xl:grid-cols-4">
               {kpis.map(({ label, v, p, hint }) => (
                 <Item key={label} variants={RISE} className="rounded-xl border border-border bg-white p-4">
                   <p className="truncate text-xs font-medium text-faint">{label}</p>
@@ -397,7 +397,7 @@ export function DispatcherDashboardMock() {
             </Stagger>
 
             {/* Charts */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 @5xl:grid-cols-2">
               <div className="rounded-xl border border-border bg-white p-4">
                 <p className="text-sm font-semibold text-ink">Gross / Dispatchers revenue</p>
                 <AreaChart data={[820, 910, 870, 1040, 990, 1180]} lo={700} hi={1250} />
@@ -411,7 +411,7 @@ export function DispatcherDashboardMock() {
             </div>
 
             {/* Tables */}
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 gap-3 @5xl:grid-cols-3">
               <MiniTable title="Top dispatchers" sub="By gross booked" head={["Dispatcher", "Loads", "Gross"]} rows={dispatchers} />
               <MiniTable title="Top carriers" sub="By revenue" head={["Carrier", "Loads", "Revenue"]} rows={carriers} />
               <MiniTable title="Top brokers" sub="By gross booked" head={["Broker", "Loads", "Gross"]} rows={brokers} />
