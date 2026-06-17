@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import { Button, Bay } from "./ui";
 import { Reveal } from "./Reveal";
+import FitToWidth from "./FitToWidth";
 import { DashboardMock } from "./mockups";
 
 export default function Hero({
@@ -38,8 +39,8 @@ export default function Hero({
           </Reveal>
         </div>
 
-        <Reveal delay={0.4} className="relative mx-auto mt-28 w-full overflow-x-auto pb-4 md:mt-32">
-          {mock || <DashboardMock />}
+        <Reveal delay={0.4} className="relative mx-auto mt-28 w-full pb-4 md:mt-32">
+          <FitToWidth designWidth={1280}>{mock || <DashboardMock />}</FitToWidth>
         </Reveal>
       </Bay>
     </section>

@@ -127,17 +127,17 @@ export function DashboardMock() {
   ];
   const invoices = [
     ["#101909", "Ready", "green", "$4,100"],
-    ["#101907", "In Review", "amber", "$3,450"],
+    ["#101907", "Review", "amber", "$3,450"],
     ["#101908", "Invoiced", "grey", "$2,875"],
     ["INV-2026-9158126", "Draft", "grey", "$2,550"],
   ];
   const settlements = [
-    ["Robert Fleet", "Ready to approve", "green", "$1,350"],
-    ["Andrew Stone", "Ready to approve", "green", "$734"],
-    ["Gudelio Ramos", "Ready to approve", "green", "$535"],
-    ["Mike Dispatcher", "Ready to approve", "green", "$520"],
-    ["Anna Accounting", "Ready to pay", "green", "$460"],
-    ["Safety Bonus Pool", "Ready to pay", "green", "$300"],
+    ["Robert Fleet", "Approve", "green", "$1,350"],
+    ["Andrew Stone", "Approve", "green", "$734"],
+    ["Gudelio Ramos", "Approve", "green", "$535"],
+    ["Mike Dispatcher", "Approve", "green", "$520"],
+    ["Anna Accounting", "Pay", "green", "$460"],
+    ["Safety Bonus Pool", "Pay", "green", "$300"],
   ];
   const tone = { green: "bg-emerald-50 text-emerald-600", amber: "bg-amber-50 text-amber-600", grey: "bg-muted text-faint" };
   // Monthly profit + Expenses trends, normalised to tiny SVGs (shared x-grid).
@@ -159,7 +159,7 @@ export function DashboardMock() {
     <div className="overflow-hidden rounded-2xl border border-border bg-white">
       <div className="flex min-h-[560px] text-[13px]">
         {/* Sidebar */}
-        <aside className="hidden w-[210px] shrink-0 flex-col border-r border-border bg-surface/60 sm:flex">
+        <aside className="flex w-[210px] shrink-0 flex-col border-r border-border bg-surface/60">
           <div className="flex items-center justify-between border-b border-border px-4 py-3.5">
             <img src="/logo.svg" alt="huntTMS" className="h-[18px] w-auto" />
             <PanelLeft className="h-3.5 w-3.5 text-faint" />
@@ -204,7 +204,7 @@ export function DashboardMock() {
 
           <div className="flex-1 space-y-3 overflow-hidden p-4">
             {/* KPI cards */}
-            <Stagger className="grid grid-cols-2 gap-3 xl:grid-cols-5">
+            <Stagger className="grid grid-cols-5 gap-3">
               {kpis.map(({ label, v, p, hint }) => (
                 <Item key={label} variants={RISE} className="rounded-xl border border-border bg-white p-4">
                   <p className="truncate text-xs font-medium text-faint">{label}</p>
@@ -221,11 +221,11 @@ export function DashboardMock() {
                 <p className="text-sm font-bold">Meet HuntBot</p>
                 <p className="mt-0.5 text-[11px] leading-5 text-white/80">Your AI dispatch assistant — open any screen, generate payroll, and compare BOL vs Rate Confirmation just by asking.</p>
               </div>
-              <span className="hidden shrink-0 items-center gap-1 text-xs font-medium md:inline-flex">See what it can do <ChevronRight className="h-3.5 w-3.5" /></span>
+              <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium">See what it can do <ChevronRight className="h-3.5 w-3.5" /></span>
             </motion.div>
 
             {/* Needs attention · Monthly profit · Expenses */}
-            <div className="grid gap-3 lg:grid-cols-3">
+            <div className="grid grid-cols-3 gap-3">
               <div className="rounded-xl border border-border bg-white p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2">
@@ -285,10 +285,10 @@ export function DashboardMock() {
             </div>
 
             {/* Top brokers · Outstanding invoices · Pending settlements */}
-            <div className="grid gap-3 lg:grid-cols-3">
+            <div className="grid grid-cols-3 gap-3">
               <MiniTable icon={<Building2 className="h-3.5 w-3.5" />} title="Top brokers" sub="By gross booked" head={["Broker", "Loads", "Gross"]} rows={brokers.map(([a, b, c]) => [a, b, c])} />
-              <MiniTable icon={<FileText className="h-3.5 w-3.5" />} title="Outstanding invoices" sub="Awaiting payment" head={["Invoice", "Status", "Amount"]} rows={invoices.map(([r, s, t, amt]) => [r, <span key={s} className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium ${tone[t]}`}>{s}</span>, amt])} />
-              <MiniTable icon={<WalletCards className="h-3.5 w-3.5" />} title="Pending settlements" sub="Not yet paid" head={["Settlement", "Status", "Amount"]} rows={settlements.map(([n, s, t, amt]) => [n, <span key={s} className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium ${tone[t]}`}>{s}</span>, amt])} />
+              <MiniTable icon={<FileText className="h-3.5 w-3.5" />} title="Outstanding invoices" sub="Awaiting payment" head={["Invoice", "Status", "Amount"]} rows={invoices.map(([r, s, t, amt]) => [r, <span key={s} className={`inline-flex whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-medium ${tone[t]}`}>{s}</span>, amt])} />
+              <MiniTable icon={<WalletCards className="h-3.5 w-3.5" />} title="Pending settlements" sub="Not yet paid" head={["Settlement", "Status", "Amount"]} rows={settlements.map(([n, s, t, amt]) => [n, <span key={s} className={`inline-flex whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-medium ${tone[t]}`}>{s}</span>, amt])} />
             </div>
           </div>
         </div>
@@ -342,7 +342,7 @@ export function DispatcherDashboardMock() {
     <div className="overflow-hidden rounded-2xl border border-border bg-white">
       <div className="flex min-h-[909px] text-[13px]">
         {/* Sidebar */}
-        <aside className="hidden w-[210px] shrink-0 flex-col border-r border-border bg-surface/60 sm:flex">
+        <aside className="flex w-[210px] shrink-0 flex-col border-r border-border bg-surface/60">
           <div className="flex items-center justify-between border-b border-border px-4 py-3.5">
             <img src="/logo.svg" alt="huntTMS" className="h-[18px] w-auto" />
             <PanelLeft className="h-3.5 w-3.5 text-faint" />
@@ -386,7 +386,7 @@ export function DispatcherDashboardMock() {
 
           <div className="flex-1 space-y-4 overflow-hidden p-5">
             {/* KPIs */}
-            <Stagger className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+            <Stagger className="grid grid-cols-4 gap-3">
               {kpis.map(({ label, v, p, hint }) => (
                 <Item key={label} variants={RISE} className="rounded-xl border border-border bg-white p-4">
                   <p className="truncate text-xs font-medium text-faint">{label}</p>
@@ -397,7 +397,7 @@ export function DispatcherDashboardMock() {
             </Stagger>
 
             {/* Charts */}
-            <div className="grid gap-3 lg:grid-cols-2">
+            <div className="grid grid-cols-2 gap-3">
               <div className="rounded-xl border border-border bg-white p-4">
                 <p className="text-sm font-semibold text-ink">Gross / Dispatchers revenue</p>
                 <AreaChart data={[820, 910, 870, 1040, 990, 1180]} lo={700} hi={1250} />
@@ -411,7 +411,7 @@ export function DispatcherDashboardMock() {
             </div>
 
             {/* Tables */}
-            <div className="grid gap-3 lg:grid-cols-3">
+            <div className="grid grid-cols-3 gap-3">
               <MiniTable title="Top dispatchers" sub="By gross booked" head={["Dispatcher", "Loads", "Gross"]} rows={dispatchers} />
               <MiniTable title="Top carriers" sub="By revenue" head={["Carrier", "Loads", "Revenue"]} rows={carriers} />
               <MiniTable title="Top brokers" sub="By gross booked" head={["Broker", "Loads", "Gross"]} rows={brokers} />
@@ -444,7 +444,7 @@ function Badge({ tone = "blue", children }) {
     amber: "bg-amber-50 text-amber-600",
     grey: "bg-muted text-faint",
   };
-  return <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${tones[tone]}`}><span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" />{children}</span>;
+  return <span className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium ${tones[tone]}`}><span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" />{children}</span>;
 }
 
 export function LoadsMock() {

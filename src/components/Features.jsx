@@ -14,6 +14,13 @@ const BLOCKS = [
   { tag: "HuntBot AI", title: "Ask in plain English — it acts for you", text: "“Show expenses for truck #105.” “Generate payroll for dispatchers.” HuntBot navigates the platform and runs the workflow for you.", bullets: ["Natural-language commands", "Runs real workflows", "Catches costly mistakes"], mock: <HuntBotMock /> },
 ];
 
+const bulletItem = (bl) => (
+  <li key={bl} className="flex items-center gap-2.5 text-[15px] text-ink">
+    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-soft text-brand"><Check className="h-3 w-3" /></span>
+    {bl}
+  </li>
+);
+
 export default function Features({
   heading,
   sub = "Stop stitching together five tools. huntTMS connects dispatch, billing, expenses, payroll and compliance so the data syncs itself.",
@@ -26,7 +33,7 @@ export default function Features({
           {/* Sticky section title */}
           <Reveal className="md:sticky md:top-[96px] md:self-start">
             <h2 className="font-display text-3xl font-semibold tracking-tight text-ink md:text-[44px] md:leading-[1.08]">
-              {heading || (<>One platform for the whole<br />back office</>)}
+              {heading || (<>One platform for the whole<br />back&nbsp;office</>)}
             </h2>
             <p className="mt-5 max-w-md text-base leading-relaxed text-body md:text-lg">{sub}</p>
           </Reveal>
@@ -42,14 +49,14 @@ export default function Features({
                   {b.tag ? <p className="mt-10 text-xs font-medium uppercase tracking-[0.12em] text-faint md:mt-12">{b.tag}</p> : null}
                   <h3 className={`font-display text-2xl font-semibold tracking-tight text-ink md:text-[30px] md:leading-[1.15] ${b.tag ? "mt-3" : "mt-10 md:mt-12"}`}>{b.title}</h3>
                   <p className="mt-3 text-base leading-relaxed text-body">{b.text}</p>
-                  <ul className="mt-5 space-y-2.5">
-                    {b.bullets.map((bl) => (
-                      <li key={bl} className="flex items-center gap-2.5 text-[15px] text-ink">
-                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-soft text-brand"><Check className="h-3 w-3" /></span>
-                        {bl}
-                      </li>
-                    ))}
-                  </ul>
+                  {b.bullets.length > 4 ? (
+                    <div className="mt-5 grid gap-x-8 gap-y-2.5 sm:grid-cols-2">
+                      <ul className="space-y-2.5">{b.bullets.slice(0, 4).map(bulletItem)}</ul>
+                      <ul className="space-y-2.5">{b.bullets.slice(4).map(bulletItem)}</ul>
+                    </div>
+                  ) : (
+                    <ul className="mt-5 space-y-2.5">{b.bullets.map(bulletItem)}</ul>
+                  )}
                 </Reveal>
               </div>
             ))}

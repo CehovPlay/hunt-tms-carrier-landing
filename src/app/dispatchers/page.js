@@ -58,8 +58,8 @@ export default function DispatchersPage() {
           />
           <FrameRule />
           <Features
-            heading={<>Everything you need to<br />dispatch smarter</>}
-            sub="Timeline scheduling, AI rate-con scanning, live tracking and dispatcher-level reporting — every tool in one workspace, no tab-juggling."
+            heading={<>Everything you need to<br />dispatch&nbsp;smarter</>}
+            sub={"Timeline scheduling, AI rate-con scanning, live tracking and dispatcher-level reporting — every tool in one workspace, no tab-juggling."}
             blocks={BLOCKS}
           />
           <FrameRule />
@@ -71,7 +71,7 @@ export default function DispatchersPage() {
           <FrameRule />
           <Testimonial quotes={QUOTES} />
           <FrameRule />
-          <Faq heading="Get answers to your most common questions" qa={QA} />
+          <Faq heading="Get answers to your most common questions" qa={QA} />
           <FrameRule />
           <CtaBand
             heading="Ready to dispatch on one screen?"

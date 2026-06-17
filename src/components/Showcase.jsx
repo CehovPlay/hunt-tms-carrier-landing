@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FileScan, Navigation, BadgeDollarSign, MapPin } from "lucide-react";
 import { Bay } from "./ui";
 import { Reveal } from "./Reveal";
-import { LoadsMock, MapMock, BillingMock, TimelineMock } from "./mockups";
+import { LoadsMock, MapMock, BillingMock, TimelineMock, RcScannerMock } from "./mockups";
 
 // 3-step explainer — each step shows the matching real platform screen.
 const VARIANTS = {
@@ -14,7 +14,7 @@ const VARIANTS = {
     { icon: BadgeDollarSign, title: "Bill, pay, repeat", text: "Collect the POD, send the invoice, capture expenses and run payroll — margins and receivables update themselves.", mock: <BillingMock /> },
   ],
   dispatcher: [
-    { icon: FileScan, title: "Scan the Rate Con", text: "Drag & drop a Rate Confirmation — AI extracts the data and auto-fills your load fields in seconds.", mock: <LoadsMock /> },
+    { icon: FileScan, title: "Scan the Rate Con", text: "Drag & drop a Rate Confirmation — AI extracts the data and auto-fills your load fields in seconds.", mock: <RcScannerMock /> },
     { icon: Navigation, title: "Schedule on the Timeline", text: "Schedule loads, see driver availability, and resolve conflicts in seconds with a clean timeline view.", mock: <TimelineMock /> },
     { icon: MapPin, title: "Track & report", text: "Watch every load on the live map and generate operations, performance and finance reports in a click.", mock: <MapMock /> },
   ],
@@ -30,12 +30,6 @@ export default function Showcase({
   const STEPS = VARIANTS[variant] || VARIANTS.carrier;
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
-
-  useEffect(() => {
-    if (paused) return;
-    const id = setTimeout(() => setActive((a) => (a + 1) % STEPS.length), DURATION);
-    return () => clearTimeout(id);
-  }, [active, paused, STEPS.length]);
 
   return (
     <section id="how" className="bg-surface py-24 md:py-28">
@@ -71,7 +65,12 @@ export default function Showcase({
                   <p className={`mt-2 text-sm leading-relaxed ${on ? "text-body" : "text-faint"}`}>{s.text}</p>
                   {on ? (
                     <span className="absolute inset-x-0 bottom-0 h-[2px] bg-border">
-                      <span key={active} className="step-progress block h-full bg-brand" style={{ animationDuration: `${DURATION}ms` }} />
+                      <span
+                        key={active}
+                        className="step-progress block h-full bg-brand"
+                        style={{ animationDuration: `${DURATION}ms`, animationPlayState: paused ? "paused" : "running" }}
+                        onAnimationEnd={() => setActive((a) => (a + 1) % STEPS.length)}
+                      />
                     </span>
                   ) : null}
                 </button>

@@ -48,6 +48,12 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Typography — never leave a single dangling word on the last line.
+   `balance` evens out short display copy (headings); `pretty` pulls the
+   last word up on longer body copy. Non-destructive: only changes wrap points. */
+h1, h2, h3, h4, h5, h6 { text-wrap: balance; }
+p, li, blockquote, figcaption { text-wrap: pretty; }
+
 ::selection {
   background: color-mix(in srgb, var(--color-brand) 22%, transparent);
   color: var(--color-ink);

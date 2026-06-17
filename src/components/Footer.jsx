@@ -45,9 +45,9 @@ export default function Footer() {
         <Container className="flex h-[56px] items-center justify-between py-5 text-xs font-medium tracking-[-0.48px] text-faint">
           <span>© {new Date().getFullYear()} huntTMS. All rights reserved</span>
           <div className="flex items-center gap-6">
-            <Link className="hover:underline" href="#">Terms and Conditions</Link>
+            <Link className="hover:underline" href="#">Terms and Conditions</Link>
             <div className="h-[9px] w-px bg-border" />
-            <Link className="hover:underline" href="#">Privacy Policy</Link>
+            <Link className="hover:underline" href="#">Privacy Policy</Link>
           </div>
         </Container>
       </div>

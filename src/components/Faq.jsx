@@ -58,7 +58,7 @@ function Row({ q, a, open, onToggle }) {
   );
 }
 
-export default function Faq({ heading = "Get answers to your most common questions", qa = QA } = {}) {
+export default function Faq({ heading = "Get answers to your most common questions", qa = QA } = {}) {
   const [openIdx, setOpenIdx] = useState(0);
   return (
     <section id="faq" className="py-24 md:py-32">

@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Truck, Radio, MessageSquare, ArrowUpRight } from "lucide-react";
 import { Wordmark, Button, Container, Bay } from "./ui";
 
 // Signature Aceternity navbar shadow (only shown once scrolled).
@@ -12,6 +13,28 @@ const NAV_SHADOW =
 
 const link = "text-sm font-medium transition-colors";
 const spring = { type: "spring", stiffness: 200, damping: 30 };
+
+// Mobile / tablet menu rows — each maps to a real destination with a one-line
+// pitch and an icon, so the dropdown reads like a mini product menu, not a list.
+const NAV = [
+  { href: "/", label: "Carriers", desc: "Run your fleet on one platform", icon: Truck, key: "carriers" },
+  { href: "/dispatchers", label: "Dispatchers", desc: "Built for dispatch services", icon: Radio, key: "dispatchers" },
+  { href: "#cta", label: "Contact", desc: "Talk to the team", icon: MessageSquare, key: "contact" },
+];
+
+// Spring-in panel with a soft stagger so the rows cascade in.
+const panelV = {
+  hidden: { opacity: 0, y: -8, scale: 0.98 },
+  show: {
+    opacity: 1, y: 0, scale: 1,
+    transition: { type: "spring", stiffness: 320, damping: 30, staggerChildren: 0.05, delayChildren: 0.04 },
+  },
+  exit: { opacity: 0, y: -8, scale: 0.98, transition: { duration: 0.16, ease: [0.4, 0, 1, 1] } },
+};
+const itemV = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 380, damping: 32 } },
+};
 
 export default function Header() {
   const pathname = usePathname();
@@ -50,6 +73,26 @@ export default function Header() {
     };
   }, []);
 
+  // While the mobile menu is open: freeze background scroll (pausing Lenis so
+  // its momentum doesn't fight the lock), and close on Escape.
+  useEffect(() => {
+    if (!open) return;
+    const lenis = typeof window !== "undefined" ? window.__lenis : null;
+    lenis?.stop();
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e) => { if (e.key === "Escape") setOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      lenis?.start();
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  // Close the menu on navigation.
+  useEffect(() => { setOpen(false); }, [pathname]);
+
   const audienceLink = (active) => `${link} ${active ? "text-ink" : "text-body hover:text-ink"}`;
 
   return (
@@ -67,7 +110,7 @@ export default function Header() {
             initial={false}
             animate={{ maxWidth: scrolled ? Math.min(372, fullW) : fullW }}
             transition={spring}
-            className={`mx-auto flex w-full items-center justify-between rounded-full ${
+            className={`relative z-10 mx-auto flex w-full items-center justify-between rounded-full ${
               scrolled
                 ? `h-12 gap-4 border border-border/70 bg-white/65 pl-5 pr-[5px] backdrop-blur-xl ${NAV_SHADOW}`
                 : "h-14 gap-4 px-0"
@@ -90,22 +133,84 @@ export default function Header() {
               <Button href="#cta" variant="primary" size="sm">Sign up</Button>
             </div>
 
-            <div className="lg:hidden">
-              <Button variant="secondary" size="sm" onClick={() => setOpen((v) => !v)}>Menu</Button>
-            </div>
+            <button
+              type="button"
+              aria-label={open ? "Close menu" : "Open menu"}
+              aria-expanded={open}
+              onClick={() => setOpen((v) => !v)}
+              className="relative flex h-9 w-9 items-center justify-center rounded-full text-ink transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand lg:hidden"
+            >
+              <motion.span
+                className="absolute h-[1.5px] w-[18px] rounded-full bg-current"
+                animate={open ? { rotate: 45, y: 0 } : { rotate: 0, y: -3 }}
+                transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+              />
+              <motion.span
+                className="absolute h-[1.5px] w-[18px] rounded-full bg-current"
+                animate={open ? { rotate: -45, y: 0 } : { rotate: 0, y: 3 }}
+                transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+              />
+            </button>
           </motion.div>
 
-          {open ? (
-            <div className="mt-2 rounded-2xl border border-border bg-white p-2 shadow-xl lg:hidden">
-              <Link href="/" onClick={() => setOpen(false)} className={`block rounded-lg px-3 py-3 text-base font-medium hover:bg-muted ${audience === "carriers" ? "text-ink" : "text-body"}`}>Carriers</Link>
-              <Link href="/dispatchers" onClick={() => setOpen(false)} className={`block rounded-lg px-3 py-3 text-base font-medium hover:bg-muted ${audience === "dispatchers" ? "text-ink" : "text-body"}`}>Dispatchers</Link>
-              <a href="#cta" onClick={() => setOpen(false)} className="block rounded-lg px-3 py-3 text-base font-medium text-body hover:bg-muted">Contact</a>
-              <div className="mt-2 flex flex-col gap-2 p-1">
-                <Button href="#cta" variant="secondary" size="sm" className="w-full" onClick={() => setOpen(false)}>Sign in</Button>
-                <Button href="#cta" variant="primary" size="sm" className="w-full" onClick={() => setOpen(false)}>Sign up</Button>
-              </div>
-            </div>
-          ) : null}
+          <AnimatePresence>
+            {open && (
+              <>
+                {/* Dim + blur the page behind the menu; click anywhere to close. */}
+                <motion.button
+                  type="button"
+                  aria-hidden
+                  tabIndex={-1}
+                  onClick={() => setOpen(false)}
+                  className="fixed inset-0 z-0 cursor-default bg-ink/10 backdrop-blur-[3px] lg:hidden"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                />
+                <motion.nav
+                  variants={panelV}
+                  initial="hidden"
+                  animate="show"
+                  exit="exit"
+                  style={{ transformOrigin: "top" }}
+                  className={`relative z-10 mt-2 overflow-hidden rounded-[26px] border border-border/70 bg-white/80 p-2 backdrop-blur-xl lg:hidden ${NAV_SHADOW}`}
+                >
+                  {NAV.map((item) => {
+                    const Icon = item.icon;
+                    const active = item.key === audience;
+                    const Tag = item.href.startsWith("#") ? "a" : Link;
+                    return (
+                      <motion.div variants={itemV} key={item.key}>
+                        <Tag
+                          href={item.href}
+                          onClick={() => setOpen(false)}
+                          className={`group flex items-center gap-3.5 rounded-2xl px-3 py-3 transition-colors ${active ? "bg-brand-soft" : "hover:bg-muted"}`}
+                        >
+                          <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-colors ${active ? "border-transparent bg-brand text-white" : "border-border bg-white text-faint group-hover:text-ink"}`}>
+                            <Icon className="h-[18px] w-[18px]" strokeWidth={2} />
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block text-[15px] font-semibold text-ink">{item.label}</span>
+                            <span className="block text-[13px] text-faint">{item.desc}</span>
+                          </span>
+                          {active ? (
+                            <span className="mr-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
+                          ) : (
+                            <ArrowUpRight className="h-4 w-4 shrink-0 text-faint transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-ink" />
+                          )}
+                        </Tag>
+                      </motion.div>
+                    );
+                  })}
+                  <motion.div variants={itemV} className="mt-2 flex flex-col gap-2 border-t border-border/70 px-1 pb-1 pt-3">
+                    <Button href="#cta" variant="secondary" size="sm" className="w-full border border-border" onClick={() => setOpen(false)}>Sign in</Button>
+                    <Button href="#cta" variant="primary" size="sm" className="w-full" onClick={() => setOpen(false)}>Sign up</Button>
+                  </motion.div>
+                </motion.nav>
+              </>
+            )}
+          </AnimatePresence>
         </Bay>
       </Container>
     </div>
