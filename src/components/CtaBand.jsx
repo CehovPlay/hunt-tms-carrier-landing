@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import { Bay } from "./ui";
 import { Reveal } from "./Reveal";
+import AppStoreBadges from "./AppStoreBadges";
 
 export default function CtaBand({
   heading = "Bring your fleet onto one platform",
@@ -42,6 +43,17 @@ export default function CtaBand({
             </button>
           </form>
           <p className="mt-4 text-sm text-faint">14-day free trial · No credit card required</p>
+          </Reveal>
+
+          <Reveal delay={0.28}>
+            <div className="mx-auto mt-12 flex max-w-md flex-col items-center gap-4">
+              <div className="flex w-full items-center gap-4 text-xs font-medium uppercase tracking-[0.12em] text-faint">
+                <span className="h-px flex-1 bg-border" />
+                Drivers, get the app
+                <span className="h-px flex-1 bg-border" />
+              </div>
+              <AppStoreBadges className="justify-center" />
+            </div>
           </Reveal>
         </div>
       </Bay>

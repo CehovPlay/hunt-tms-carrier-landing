@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Container } from "./ui";
 import { Reveal } from "./Reveal";
+import AppStoreBadges from "./AppStoreBadges";
 
 export default function Footer() {
   return (
@@ -12,6 +13,10 @@ export default function Footer() {
           <p className="text-sm font-medium leading-[20px] tracking-[-0.4px] text-faint">
             huntTMS by LoadHunter is the carrier-side platform built for U.S. fleets and owner-operators — dispatch, invoicing, factoring, expenses, payroll, driver compliance and live tracking in one workspace. It is the companion to the dispatcher-first product and is not affiliated with or endorsed by any third-party load board or factoring service mentioned. All trademarks remain the property of their respective owners. Built for speed, clarity and fewer clicks — not more tabs.
           </p>
+          <div className="flex flex-col gap-3">
+            <p className="text-xs font-medium uppercase tracking-[0.12em] text-faint">Get the driver app</p>
+            <AppStoreBadges />
+          </div>
         </Reveal>
         <Reveal delay={0.12} className="flex w-full items-start justify-end md:w-[283px]">
           <div className="flex w-full flex-col gap-6 text-sm font-medium tracking-[-0.4px]">
