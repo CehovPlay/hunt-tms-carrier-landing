@@ -1,11 +1,12 @@
 import { Check } from "lucide-react";
 import { Bay } from "./ui";
 import { Reveal } from "./Reveal";
-import { LoadsMock, BillingMock, MapMock, TimelineMock, ExpenseMock, PayrollMock, ComplianceMock, HuntBotMock } from "./mockups";
+import { LoadsMock, BillingMock, MapMock, TimelineMock, ExpenseMock, PayrollMock, ComplianceMock, HuntBotMock, DriverAppMock } from "./mockups";
 
 const BLOCKS = [
   { tag: "Dispatch & loads", title: "Every load in one record — no double entry", text: "Drop a Rate Confirmation and AI fills the load. Driver, truck, broker and stops stay in sync from booking to delivery.", bullets: ["AI Rate Con parsing", "BOL vs Rate Con mismatch flags", "One source of truth per load"], mock: <LoadsMock /> },
   { tag: "Live map & tracking", title: "See every truck on a real map", text: "Real road routing from pickup to delivery, with live driver positions and a live ETA on every load.", bullets: ["Real-road routing", "Live driver positions", "Live ETA per load"], mock: <MapMock /> },
+  { tag: "Driver app", title: "Your drivers' phones do the data entry", text: "A free companion app for every driver — they get their assigned loads, navigate the route, and confirm pickup and delivery with a swipe. Location, POD and scanned docs flow straight into huntTMS. No ELD subscription required.", bullets: ["Loads, route & live ETA in the cab", "Swipe-to-confirm pickup & delivery", "Scan BOL/POD from the truck", "“Hey Bot” voice copilot"], mock: <DriverAppMock />, bare: true },
   { tag: "Dispatch timeline", title: "A week of your fleet, at a glance", text: "A board of every truck and appointment so you can spot conflicts and idle trucks before they cost you a load.", bullets: ["Week-at-a-glance board", "Spot idle trucks", "Catch appointment conflicts"], mock: <TimelineMock /> },
   { tag: "Billing & factoring", title: "From POD to paid, without the busywork", text: "Generate broker invoices in a click, send them straight to your factor, and watch receivables age in real time.", bullets: ["One-click broker invoices", "Send to factoring", "Live receivables aging"], mock: <BillingMock /> },
   { tag: "Expense capture", title: "Every dollar assigned and approved", text: "Fuel, tolls, lumpers and maintenance — attach receipts, assign to loads and approve right from the load. Margins stay honest.", bullets: ["Receipts on every expense", "Assign to a load", "Approve in one tap"], mock: <ExpenseMock /> },

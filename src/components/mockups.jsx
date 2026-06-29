@@ -542,6 +542,106 @@ export function MapMock() {
   );
 }
 
+/* ── Driver App (mobile companion) ─────────────────────────────────────────
+   The carrier's drivers carry the data source in their pocket: loads, live
+   route, swipe-to-confirm POD and doc scans flow straight into the platform.
+   Same monochrome / Geist / teal-accent design language as the driver app. */
+function PhoneFrame({ children }) {
+  return (
+    <div className="relative w-[248px] shrink-0 overflow-hidden rounded-[2.2rem] border border-border-strong bg-white shadow-[0_30px_70px_rgba(23,23,23,0.16)]">
+      {/* status bar + notch */}
+      <div className="relative flex h-9 items-center justify-between px-5 pt-1.5">
+        <span className="text-[10px] font-semibold text-ink">9:41</span>
+        <span className="absolute left-1/2 top-2 h-4 w-16 -translate-x-1/2 rounded-full bg-ink" />
+        <Activity className="h-3 w-3 text-faint" />
+      </div>
+      {children}
+    </div>
+  );
+}
+
+export function DriverLoadsMock() {
+  const trips = [
+    { id: "#1832888", stops: [["Chicago, IL", "Mar 12 · 08:00"], ["Dallas, TX", "Mar 13 · 14:00"]] },
+    { id: "#1832901", stops: [["Austin, TX", "Mar 14 · 09:30"], ["Denver, CO", "Mar 15 · 16:00"]] },
+  ];
+  return (
+    <PhoneFrame>
+      <div className="px-4 pb-5">
+        <div className="flex items-center justify-between py-2">
+          <span className="text-sm font-semibold text-ink">huntTMS</span>
+          <LogOut className="h-4 w-4 text-faint" />
+        </div>
+        <div className="grid grid-cols-2 gap-1 rounded-xl bg-muted p-1 text-xs font-medium">
+          <span className="rounded-lg bg-white py-1.5 text-center text-ink shadow-[0_1px_2px_rgba(23,23,23,0.06)]">Scheduled</span>
+          <span className="py-1.5 text-center text-faint">Completed</span>
+        </div>
+        <Stagger className="mt-3 space-y-2.5" gap={0.1}>
+          {trips.map((t) => (
+            <Item key={t.id} variants={RISE} className="rounded-2xl border border-border bg-white p-3.5">
+              <div className="flex items-center gap-2">
+                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-muted text-faint"><FileText className="h-3.5 w-3.5" /></span>
+                <span className="text-sm font-semibold text-ink">{t.id}</span>
+                <ChevronRight className="ml-auto h-4 w-4 text-faint" />
+              </div>
+              <div className="mt-3 space-y-2">
+                {t.stops.map(([city, when], i) => (
+                  <div key={city} className="flex items-center gap-2.5">
+                    <span className={`h-2.5 w-2.5 rounded-full ${i === 0 ? "bg-emerald-500" : "bg-orange-500"}`} />
+                    <span className="text-xs font-medium text-ink">{city}</span>
+                    <span className="ml-auto text-[11px] text-faint">{when}</span>
+                  </div>
+                ))}
+              </div>
+            </Item>
+          ))}
+        </Stagger>
+      </div>
+    </PhoneFrame>
+  );
+}
+
+export function DriverMapMock() {
+  return (
+    <PhoneFrame>
+      <div className="relative">
+        <MapCanvas height={320} labels={false} />
+        {/* bottom sheet — next stop + upload + swipe-to-confirm */}
+        <div className="absolute inset-x-0 bottom-0 rounded-t-2xl border-t border-border bg-white p-4">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-[10px] uppercase tracking-wide text-faint">Next stop · Delivery</p>
+              <p className="mt-0.5 text-sm font-semibold text-ink">Dallas, TX</p>
+              <p className="text-[11px] text-faint">Mar 13 · 14:00 · ETA 1h 20m</p>
+            </div>
+            <span className="flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-[11px] font-medium text-ink"><Paperclip className="h-3 w-3" /> Upload</span>
+          </div>
+          <div className="relative mt-3 flex h-12 items-center rounded-full bg-emerald-500/10 px-1.5">
+            <motion.span
+              animate={{ x: [0, 8, 0] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: EASE }}
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500 text-white shadow-[0_2px_6px_rgba(16,185,129,0.4)]"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </motion.span>
+            <span className="-ml-9 flex-1 text-center text-sm font-medium text-emerald-700">Swipe to Delivered</span>
+          </div>
+        </div>
+      </div>
+    </PhoneFrame>
+  );
+}
+
+// Two phones on a dotted backdrop — the driver-app feature block.
+export function DriverAppMock() {
+  return (
+    <div className="dot-grid flex items-start justify-center gap-6 rounded-2xl border border-border bg-white/50 px-4 py-8 md:gap-9 md:px-8 md:py-10">
+      <div className="-rotate-1"><DriverMapMock /></div>
+      <div className="mt-7 rotate-1 max-lg:hidden"><DriverLoadsMock /></div>
+    </div>
+  );
+}
+
 export function TimelineMock() {
   // Mirrors the platform timeline: lane label + day grid + bars (id tag on top,
   // route + rate inside a muted body with a colored left accent).
